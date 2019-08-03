@@ -1,0 +1,24 @@
+{
+  "name": "football-mogul-stats",
+  "version": "0.0.0",
+  "description": "Advanced stats for Football Mogul",
+  "main": "index.js",
+  "dependencies": {
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.12.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sammidysam/football-mogul-stats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sammidysam/football-mogul-stats/issues"
+  },
+  "homepage": "https://github.com/Sammidysam/football-mogul-stats#readme"
+}
