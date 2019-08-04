@@ -4,6 +4,8 @@
   "description": "Advanced stats for Football Mogul",
   "main": "index.js",
   "dependencies": {
+    "command-line-args": "^5.1.1",
+    "find": "^0.3.0",
     "mysql2": "^1.6.5",
     "sequelize": "^5.12.2",
     "sequelize-cli": "^5.5.0"
