@@ -2,6 +2,8 @@ const path = require('path');
 const commandLineArgs = require('command-line-args');
 const find = require('find');
 const models = require('../models');
+// make not async
+models.sequelize.sync();
 
 const optionDefinitions = [
   { name: 'directory', alias: 'd', type: String }
@@ -23,7 +25,6 @@ find.eachfile(boxScoreRegex, options.directory, (file) => {
 
   // Our database will only hold 4-digit years.
   const dbYear = year < 70 ? 2000 + year : 1900 + year;
-  // async causing problems
   // models.Season.findOrCreate({ where: { year: dbYear } })
   // .then(season => {
   //   console.log(JSON.stringify(season));
