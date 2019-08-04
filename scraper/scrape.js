@@ -1,10 +1,12 @@
 const path = require('path');
 const commandLineArgs = require('command-line-args');
 const find = require('find');
-const models = require('../models');
-// make not async
-models.sequelize.sync();
 
+const models = require('../models');
+const config = require('./config.js');
+const seasons = require('./seasons.js');
+
+// Future option will be which game save to link it to.
 const optionDefinitions = [
   { name: 'directory', alias: 'd', type: String }
 ];
@@ -15,18 +17,23 @@ if (!options.directory) {
   process.exit(1);
 }
 
-const boxScoreRegex = /Box-([0-9]*)-([0-9]*)\.htm$/;
-find.eachfile(boxScoreRegex, options.directory, (file) => {
-  const filename = path.basename(file);
+/**
+ * The easiest starting assumption is from a blank database.
+ * Later, we can append to an existing database, and this
+ * will probably be the default behavior.
+ */
+models.sequelize.sync({ force: true })
+.then(() => {
+  find.file(config.BOX_SCORE_REGEX, options.directory, files => {
+    const filenames = files.map(f => (
+      path.basename(f)
+    ));
 
-  const match = filename.match(boxScoreRegex);
-  const year = Number(match[1]);
-  const id = Number(match[2]);
-
-  // Our database will only hold 4-digit years.
-  const dbYear = year < 70 ? 2000 + year : 1900 + year;
-  // models.Season.findOrCreate({ where: { year: dbYear } })
-  // .then(season => {
-  //   console.log(JSON.stringify(season));
-  // });
+    seasons.createSeasons(filenames)
+    .then(s => {
+      console.log(JSON.stringify(s));
+    });
+    // then create teams
+    // then create games (and team participations at same time)
+  });
 });
