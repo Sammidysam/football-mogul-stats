@@ -5,6 +5,7 @@ const find = require('find');
 const models = require('../models');
 const config = require('./config.js');
 const seasons = require('./seasons.js');
+const teams = require('./teams.js');
 
 // Future option will be which game save to link it to.
 const optionDefinitions = [
@@ -31,9 +32,8 @@ models.sequelize.sync({ force: true })
 
     seasons.createSeasons(filenames)
     .then(s => {
-      console.log(JSON.stringify(s));
+      teams.createTeams(files);
     });
-    // then create teams
     // then create games (and team participations at same time)
   });
 });
