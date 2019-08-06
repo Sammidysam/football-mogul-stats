@@ -10,22 +10,16 @@ const twoDigitToFourDigitYear = year => {
 };
 
 // Returns promise of all of the season objects that were created.
-const createSeasons = filenames => {
-  const years = new Set(filenames.map(f => {
-    const match = f.match(config.BOX_SCORE_REGEX);
-    const year = Number(match[1]);
+const findOrCreateSeason = filename => {
+  const match = filename.match(config.BOX_SCORE_REGEX);
+  const year = Number(match[1]);
 
-    return twoDigitToFourDigitYear(year);
-  }));
+  const fourDigitYear = twoDigitToFourDigitYear(year);
+  const whereClause = { year: fourDigitYear };
 
-  const dbObjects = [...years].map(y => (
-    { year: y }
-  ));
-
-  return models.Season.bulkCreate(dbObjects)
-         .then(() => models.Season.findAll());
+  return models.Season.findCreateFind({ where: whereClause });
 };
 
 module.exports = {
-  createSeasons
+  findOrCreateSeason
 };

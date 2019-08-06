@@ -5,7 +5,7 @@ const find = require('find');
 const models = require('../models');
 const config = require('./config.js');
 const seasons = require('./seasons.js');
-const teams = require('./teams.js');
+const parser = require('./parser.js');
 
 // Future option will be which game save to link it to.
 const optionDefinitions = [
@@ -25,15 +25,14 @@ if (!options.directory) {
  */
 models.sequelize.sync({ force: true })
 .then(() => {
-  find.file(config.BOX_SCORE_REGEX, options.directory, files => {
-    const filenames = files.map(f => (
-      path.basename(f)
-    ));
+  find.eachfile(config.BOX_SCORE_REGEX, options.directory, f => {
+    const filename = path.basename(f);
 
-    seasons.createSeasons(filenames)
-    .then(s => {
-      teams.createTeams(files);
+    seasons.findOrCreateSeason(filename)
+    .spread((season, created) => {
+      // parse fully, then findCreateFind both teams
+      // then create game and team participations
+      parser.parseAndCreate(f, season);
     });
-    // then create games (and team participations at same time)
   });
 });
