@@ -16,11 +16,14 @@ const parseAndCreate = (file, season) => {
   const away = match[2];
   const home = match[3];
 
+  const awayFinal = Number($('td .tmc').find('b').first().text());
+  const homeFinal = Number($('td .tbc').find('b').first().text());
+
   models.Team.findCreateFind({ where: { name: away } })
   .spread((awayTeam, created) => {
     models.Team.findCreateFind({ where: { name: home } })
     .spread((homeTeam, created) => {
-      console.log(`${season.year} ${week}: ${awayTeam.name} at ${homeTeam.name}`);
+      console.log(`${season.year} ${week}: ${awayTeam.name} ${awayFinal} at ${homeTeam.name} ${homeFinal}`);
     });
   });
 };
