@@ -5,7 +5,7 @@ const find = require('find');
 const models = require('../models');
 const config = require('./config.js');
 const seasons = require('./seasons.js');
-const parser = require('./parser.js');
+const parser = require('./parser/parser.js');
 
 // Future option will be which game save to link it to.
 const optionDefinitions = [
