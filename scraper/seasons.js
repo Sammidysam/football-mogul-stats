@@ -1,3 +1,4 @@
+const path = require('path');
 const models = require('../models');
 const config = require('./config.js');
 
@@ -10,7 +11,8 @@ const twoDigitToFourDigitYear = year => {
 };
 
 // Returns promise of all of the season objects that were created.
-const findOrCreateSeason = filename => {
+const findOrCreateSeason = file => {
+  const filename = path.basename(file);
   const match = filename.match(config.BOX_SCORE_REGEX);
   const year = Number(match[1]);
 

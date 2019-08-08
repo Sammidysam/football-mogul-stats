@@ -1,11 +1,14 @@
-const path = require('path');
 const commandLineArgs = require('command-line-args');
 const find = require('find');
+const fs = require('fs');
+const cheerio = require('cheerio');
 
 const models = require('../models');
 const config = require('./config.js');
 const seasons = require('./seasons.js');
-const parser = require('./parser/parser.js');
+const teams = require('./teams.js');
+const games = require('./games.js');
+const teamParticipations = require('./teamparticipations.js');
 
 // Future option will be which game save to link it to.
 const optionDefinitions = [
@@ -26,13 +29,14 @@ if (!options.directory) {
 models.sequelize.sync({ force: true })
 .then(() => {
   find.eachfile(config.BOX_SCORE_REGEX, options.directory, f => {
-    const filename = path.basename(f);
+    const data = fs.readFileSync(f, 'utf8');
+    const $ = cheerio.load(data);
 
-    seasons.findOrCreateSeason(filename)
+    seasons.findOrCreateSeason(f)
     .spread((season, created) => {
-      // parse fully, then findCreateFind both teams
-      // then create game and team participations
-      parser.parseAndCreate(f, season);
+      // create teams
+      // create game + team participations
+      teams.findOrCreateTeams($).spread((awayTeam, homeTeam) => console.log(`${awayTeam.name} at ${homeTeam.name}`));
     });
   });
 });
