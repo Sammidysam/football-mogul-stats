@@ -1,14 +1,14 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const TeamParticipation = sequelize.define('TeamParticipation', {
+    home: DataTypes.BOOLEAN,
     score: DataTypes.INTEGER,
     box_score_link: DataTypes.STRING,
-    recap_link: DataTypes.STRING,
-    team_id: DataTypes.INTEGER,
-    game_id: DataTypes.INTEGER
+    recap_link: DataTypes.STRING
   }, {});
   TeamParticipation.associate = function(models) {
-    // associations can be defined here
+    TeamParticipation.belongsTo(models.Team);
+    TeamParticipation.belongsTo(models.Game);
   };
   return TeamParticipation;
 };

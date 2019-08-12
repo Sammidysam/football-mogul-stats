@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     location: DataTypes.STRING
   }, {});
   Team.associate = function(models) {
-    // associations can be defined here
+    Team.belongsToMany(models.Game, { through: models.TeamParticipation });
   };
   return Team;
 };

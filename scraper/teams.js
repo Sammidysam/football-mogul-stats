@@ -1,10 +1,6 @@
 const models = require('../models');
-const config = require('./config.js');
 
-const findOrCreateTeams = $ => {
-  const gameString = $(config.HEAD_SELECTOR).text();
-  const match = gameString.match(config.HEAD_TITLE_REGEX);
-
+const findOrCreateTeams = match => {
   const away = match[2];
   const home = match[3];
 

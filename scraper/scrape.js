@@ -36,7 +36,14 @@ models.sequelize.sync({ force: true })
     .spread((season, created) => {
       // create teams
       // create game + team participations
-      teams.findOrCreateTeams($).spread((awayTeam, homeTeam) => console.log(`${awayTeam.name} at ${homeTeam.name}`));
+      const gameString = $('head title').text();
+      const match = gameString.match(/(.*): (.*) at (.*)/);
+
+      teams.findOrCreateTeams(match).spread((awayTeam, homeTeam) => {
+        games.createGame(match, season).then(game => {
+          console.log(JSON.stringify(game));
+        });
+      });
     });
   });
 });
