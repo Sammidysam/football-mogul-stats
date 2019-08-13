@@ -1,10 +1,11 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const TeamParticipation = sequelize.define('TeamParticipation', {
+    // better to be an enum to allow for neutral site
     home: DataTypes.BOOLEAN,
     score: DataTypes.INTEGER,
-    box_score_link: DataTypes.STRING,
-    recap_link: DataTypes.STRING
+    boxScoreLink: DataTypes.STRING,
+    recapLink: DataTypes.STRING
   }, {});
   TeamParticipation.associate = function(models) {
     TeamParticipation.belongsTo(models.Team);
