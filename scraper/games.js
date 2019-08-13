@@ -1,5 +1,5 @@
+const path = require('path');
 const models = require('../models');
-const config = require('./config.js');
 
 const WEEK_REGEX = /Week ([0-9]*)/;
 
@@ -27,11 +27,20 @@ const weekStatus = week => {
   };
 };
 
-const createGame = (match, season) => {
+const boxScoreToRecap = file => {
+  const dirname = path.dirname(file);
+  const newBasename = path.basename(file).replace('Box', 'Recap');
+
+  return path.join(dirname, newBasename);
+};
+
+const createGame = (match, file, season) => {
   const week = match[1];
 
   return models.Game.create({
     ...weekStatus(week),
+    boxScoreLink: file,
+    recapLink: boxScoreToRecap(file),
     SeasonYear: season.year
   });
 };

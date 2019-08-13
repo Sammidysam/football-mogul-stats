@@ -1,6 +1,4 @@
-const path = require('path');
 const models = require('../models');
-const config = require('./config.js');
 
 const EARLIEST_GAME_START = 70;
 const LATER_CENTURY = 2000;
@@ -11,9 +9,7 @@ const twoDigitToFourDigitYear = year => {
 };
 
 // Returns promise of all of the season objects that were created.
-const findOrCreateSeason = file => {
-  const filename = path.basename(file);
-  const match = filename.match(config.BOX_SCORE_REGEX);
+const findOrCreateSeason = match => {
   const year = Number(match[1]);
 
   const fourDigitYear = twoDigitToFourDigitYear(year);

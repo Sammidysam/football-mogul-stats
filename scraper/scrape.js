@@ -1,10 +1,10 @@
+const path = require('path');
 const commandLineArgs = require('command-line-args');
 const find = require('find');
 const fs = require('fs');
 const cheerio = require('cheerio');
 
 const models = require('../models');
-const config = require('./config.js');
 const seasons = require('./seasons.js');
 const teams = require('./teams.js');
 const games = require('./games.js');
@@ -21,6 +21,8 @@ if (!options.directory) {
   process.exit(1);
 }
 
+const BOX_SCORE_REGEX = /Box-([0-9]*)-([0-9]*)\.htm$/;
+
 /**
  * The easiest starting assumption is from a blank database.
  * Later, we can append to an existing database, and this
@@ -28,24 +30,21 @@ if (!options.directory) {
  */
 models.sequelize.sync({ force: true })
 .then(() => {
-  find.eachfile(config.BOX_SCORE_REGEX, options.directory, f => {
+  find.eachfile(BOX_SCORE_REGEX, options.directory, f => {
+    const filename = path.basename(f);
+    const filenameMatch = filename.match(BOX_SCORE_REGEX);
+
     const data = fs.readFileSync(f, 'utf8');
     const $ = cheerio.load(data);
 
-    seasons.findOrCreateSeason(f)
+    seasons.findOrCreateSeason(filenameMatch)
     .spread((season, created) => {
-      // create teams
-      // create game + team participations
       const gameString = $('head title').text();
-      const match = gameString.match(/(.*): (.*) at (.*)/);
+      const gameStringMatch = gameString.match(/(.*): (.*) at (.*)/);
 
-      teams.findOrCreateTeams(match).spread((awayTeam, homeTeam) => {
-        games.createGame(match, season).then(game => {
-          teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam)
-          .spread((away, home) => {
-            console.log(JSON.stringify(away));
-            console.log(JSON.stringify(home));
-          });
+      teams.findOrCreateTeams(gameStringMatch).spread((awayTeam, homeTeam) => {
+        games.createGame(gameStringMatch, f, season).then(game => {
+          teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam);
         });
       });
     });
