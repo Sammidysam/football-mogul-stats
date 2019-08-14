@@ -6,6 +6,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "command-line-args": "^5.1.1",
+    "express": "^4.17.1",
     "find": "^0.3.0",
     "mysql2": "^1.6.5",
     "sequelize": "^5.12.2",
