@@ -1,11 +1,10 @@
+const express = require('express');
+const router = express.Router();
+
 const models = require('../models');
 
-const gameRoutes = server => {
-  server.get('/games', (req, res) => (
-    models.Game.findAll().then(games => res.json(games))
-  ));
-};
+router.get('/', (req, res) => (
+  models.Game.findAll().then(games => res.json(games))
+));
 
-module.exports = {
-  gameRoutes
-};
+module.exports = router;

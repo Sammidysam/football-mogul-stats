@@ -1,11 +1,10 @@
+const express = require('express');
+const router = express.Router();
+
 const models = require('../models');
 
-const seasonRoutes = server => {
-  server.get('/seasons', (req, res) => (
-    models.Season.findAll().then(seasons => res.json(seasons))
-  ));
-};
+router.get('/', (req, res) => (
+  models.Season.findAll().then(seasons => res.json(seasons))
+));
 
-module.exports = {
-  seasonRoutes
-};
+module.exports = router;

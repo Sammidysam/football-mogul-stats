@@ -7,9 +7,9 @@ const seasons = require('./seasons');
 const teams = require('./teams');
 const teamParticipations = require('./teamparticipations');
 
-games.gameRoutes(server);
-seasons.seasonRoutes(server);
-teams.teamRoutes(server);
-teamParticipations.teamParticipationRoutes(server);
+server.use('/games', games);
+server.use('/seasons', seasons);
+server.use('/teams', teams);
+server.use('/team-participations', teamParticipations);
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`))
