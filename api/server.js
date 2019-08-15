@@ -1,9 +1,15 @@
 const express = require('express');
 const server = express();
-const port = 3000;
+const PORT = 3000;
 
-const models = require('../models');
+const games = require('./games');
+const seasons = require('./seasons');
+const teams = require('./teams');
+const teamParticipations = require('./teamparticipations');
 
-server.get('/', (req, res) => models.TeamParticipation.findAll().then(teams => res.json(teams)));
+games.gameRoutes(server);
+seasons.seasonRoutes(server);
+teams.teamRoutes(server);
+teamParticipations.teamParticipationRoutes(server);
 
-server.listen(port, () => console.log(`Example app listening on port ${port}!`))
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`))
