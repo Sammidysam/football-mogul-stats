@@ -1,6 +1,6 @@
 const express = require('express');
 const server = express();
-const PORT = 3000;
+const PORT = 3001;
 
 const games = require('./games');
 const seasons = require('./seasons');
