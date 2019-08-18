@@ -24,18 +24,21 @@ router.get('/', (req, res) => (
     // to handle multiple saves.
     models.Season.findByPk(year)
     .then(season => (
-      models.Game.findOne({ where: { SeasonYear: season.year, playoff: true } })
+      models.Game.findOne({
+        where: { SeasonYear: season.year },
+        order: [
+          ['playoff', 'desc'],
+          ['week', 'desc']
+        ]
+      })
       .then(game => (
-        models.Game.max('week', { where: { SeasonYear: season.year, playoff: Boolean(game) } })
-        .then(week => (
-          res.json(
-            {
-              week: week,
-              playoff: Boolean(game),
-              season: season
-            }
-          )
-        ))
+        res.json(
+          {
+            week: game.week,
+            playoff: game.playoff,
+            season: season
+          }
+        )
       ))
     ))
   ))
