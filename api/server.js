@@ -1,6 +1,6 @@
 const express = require('express');
 const server = express();
-const PORT = 3001;
+const PORT = 3002;
 
 const games = require('./games');
 const latest = require('./latest');
