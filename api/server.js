@@ -8,10 +8,16 @@ const seasons = require('./seasons');
 const teams = require('./teams');
 const teamParticipations = require('./teamparticipations');
 
-server.use('/games', games);
-server.use('/latest', latest);
-server.use('/seasons', seasons);
-server.use('/teams', teams);
-server.use('/team-participations', teamParticipations);
+const routers = {
+  '/games': games,
+  '/latest': latest,
+  '/seasons': seasons,
+  '/teams': teams,
+  '/team-participations': teamParticipations
+};
+
+Object.keys(routers).forEach(k => {
+  server.use(k, routers[k]);
+});
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`))
