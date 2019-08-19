@@ -1,11 +1,13 @@
 import React from 'react';
 
+import Typography from '@material-ui/core/Typography';
+
 const api = require('../api.js');
 
 class Schedule extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       playoff: false,
       week: 1,
@@ -26,9 +28,9 @@ class Schedule extends React.Component {
     const { playoff, week, season: { year } } = this.state;
 
     return (
-      <h1>
+      <Typography variant="h1" align="center">
         Schedule
-      </h1>
+      </Typography>
     );
   }
 }
