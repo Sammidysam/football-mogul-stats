@@ -4,6 +4,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
+import WeekSelect from './WeekSelect.js';
+
 const api = require('../api.js');
 
 class Schedule extends React.Component {
@@ -47,9 +49,15 @@ class Schedule extends React.Component {
           value={season}
         >
           {seasons.map(s => (
-            <MenuItem value={s}>{s.year}</MenuItem>
+            <MenuItem value={s} key={s.year}>{s.year}</MenuItem>
           ))}
         </Select>
+
+        <WeekSelect
+          onChange={e => this.setState({ week: e.target.value.week, playoff: e.target.value.playoff })}
+          value={{ week: week, playoff: playoff }}
+          season={season}
+        />
       </div>
     );
   }
