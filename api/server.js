@@ -1,4 +1,5 @@
 const express = require('express');
+const boolParser = require('express-query-boolean');
 const server = express();
 const PORT = 3002;
 
@@ -25,6 +26,8 @@ if (ENVIRONMENT === DEVELOPMENT) {
     next();
   });
 }
+
+server.use(boolParser());
 
 Object.keys(routers).forEach(k => {
   server.use(k, routers[k]);
