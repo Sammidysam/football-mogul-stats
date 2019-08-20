@@ -5,7 +5,7 @@ const models = require('../models');
 const common = require('./common.js');
 
 router.get('/', (req, res) => (
-  models.Game.findAll().then(games => res.json(games))
+  models.Game.findAll({ where: req.query }).then(games => res.json(games))
 ));
 
 router.get('/:gameId', (req, res) => (
