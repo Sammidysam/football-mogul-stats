@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
+import GameList from './GameList.js';
 import WeekSelect from './WeekSelect.js';
 
 const api = require('../api.js');
@@ -73,6 +74,12 @@ class Schedule extends React.Component {
             />
           </FormControl>
         </Box>
+
+        <GameList
+          playoff={this.state.playoff}
+          week={this.state.week}
+          season={this.state.season}
+        />
       </Box>
     );
   }
