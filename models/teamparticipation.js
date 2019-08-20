@@ -1,6 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const TeamParticipation = sequelize.define('TeamParticipation', {
+    // this will be needed for PlayerParticipation attaching to TeamParticipation
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
