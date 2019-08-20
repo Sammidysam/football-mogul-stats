@@ -1,3 +1,5 @@
+const queryString = require('query-string');
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 if (!process.env.REACT_APP_API_URL) {
@@ -5,8 +7,8 @@ if (!process.env.REACT_APP_API_URL) {
   // Set default value?  Exit?
 }
 
-const fetch = url => {
-  return window.fetch(`http://${API_URL}/${url}`)
+const fetch = (url, params) => {
+  return window.fetch(`http://${API_URL}/${url}${params ? `?${queryString.stringify(params)}` : ''}`)
   .then(res => res.json());
 };
 
