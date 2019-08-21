@@ -8,6 +8,7 @@ class GameList extends React.Component {
 
     this.state = {
       games: [],
+      teams: [],
       teamParticipations: []
     }
   }
@@ -31,20 +32,25 @@ class GameList extends React.Component {
         })
         .then(teamParticipations => this.setState({ teamParticipations: teamParticipations }));
       });
+
+      api.fetch('teams')
+      .then(teams => this.setState({ teams: teams }));
     }
   }
 
   render() {
-    const { games, teamParticipations } = this.state;
+    const { games, teams, teamParticipations } = this.state;
     const { playoff, week, season } = this.props;
 
     return games.map(g => {
       const away = teamParticipations.find(tp => tp.GameId === g.id && !tp.home) || {};
+      const awayTeam = teams.find(t => t.id === away.TeamId) || {};
       const home = teamParticipations.find(tp => tp.GameId === g.id && tp.home) || {};
+      const homeTeam = teams.find(t => t.id === home.TeamId) || {};
 
       return (
         <div key={g.id}>
-          {away.score} - {home.score}
+          {awayTeam.name} {away.score} - {homeTeam.name} {home.score}
         </div>
       );
     });
