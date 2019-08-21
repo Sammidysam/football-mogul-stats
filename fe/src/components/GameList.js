@@ -69,18 +69,28 @@ class GameList extends React.Component {
           return (
             <Paper display="flex" flexDirection="column" className={classes.paper} key={g.id}>
               <Box padding="5px">
-                <Box>
+                <Box display="flex" flexDirection="row" justifyContent="space-between">
                   <Typography>
                     <Box fontWeight={winnerId === away.id ? 'fontWeightMedium' : 'fontWeightRegular'}>
                       {awayTeam.name} {away.score}
                     </Box>
                   </Typography>
+                  <Typography>
+                    <a href={g.recapLink}>
+                      Recap
+                    </a>
+                  </Typography>
                 </Box>
-                <Box>
+                <Box display="flex" flexDirection="row" justifyContent="space-between">
                   <Typography>
                     <Box fontWeight={winnerId === home.id ? 'fontWeightMedium' : 'fontWeightRegular'}>
                       {homeTeam.name} {home.score}
                     </Box>
+                  </Typography>
+                  <Typography>
+                    <a href={g.boxScoreLink}>
+                      Box Score
+                    </a>
                   </Typography>
                 </Box>
               </Box>
