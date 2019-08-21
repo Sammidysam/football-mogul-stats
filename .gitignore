@@ -65,3 +65,6 @@ config/config.json
 
 # Personal notes
 .notes
+
+# Symlink to reference output, box scores
+fe/public/FootballMogul

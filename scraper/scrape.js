@@ -3,6 +3,7 @@ const commandLineArgs = require('command-line-args');
 const find = require('find');
 const fs = require('fs');
 const cheerio = require('cheerio');
+const symlinkDir = require('symlink-dir');
 
 const models = require('../models');
 const seasons = require('./seasons.js');
@@ -20,6 +21,12 @@ if (!options.directory) {
   console.error('You must pass an output directory!');
   process.exit(1);
 }
+
+// Make our Output folder available to our frontend.
+symlinkDir(path.dirname(options.directory), `${__dirname}/../fe/public/FootballMogul`)
+.then(result => {
+  console.log('Created symbolic link for Output folder');
+});
 
 const BOX_SCORE_REGEX = /Box-([0-9]*)-([0-9]*)\.htm$/;
 
@@ -43,7 +50,7 @@ models.sequelize.sync({ force: true })
       const gameStringMatch = gameString.match(/(.*): (.*) at (.*)/);
 
       teams.findOrCreateTeams(gameStringMatch).spread((awayTeam, homeTeam) => {
-        games.createGame(gameStringMatch, f, season).then(game => {
+        games.createGame(gameStringMatch, filename, season).then(game => {
           teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam);
         });
       });

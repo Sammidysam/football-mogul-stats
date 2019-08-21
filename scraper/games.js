@@ -34,13 +34,13 @@ const boxScoreToRecap = file => {
   return path.join(dirname, newBasename);
 };
 
-const createGame = (match, file, season) => {
+const createGame = (match, filename, season) => {
   const week = match[1];
 
   return models.Game.create({
     ...weekStatus(week),
-    boxScoreLink: file,
-    recapLink: boxScoreToRecap(file),
+    boxScoreLink: `FootballMogul/Output/${filename}`,
+    recapLink: `FootballMogul/Output/${boxScoreToRecap(filename)}`,
     SeasonYear: season.year
   });
 };
