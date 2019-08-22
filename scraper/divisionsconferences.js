@@ -3,13 +3,19 @@ const models = require('../models');
 // I've seen that 1959 is starting to be supported later, so this may change.
 const SUPER_BOWL_WEEK = 4;
 
-const createGroupings = (game, awayTeam, homeTeam, season) => {
+/**
+ * Returns a link object as such:
+ * {
+ *   type: "Conference"|"Division",
+ *   teamIds: [
+ *     1,
+ *     2
+ *   ]
+ * }
+ */
+const createGroupingLink = (game, awayTeam, homeTeam, season) => {
   // From playoff games we create Conferences;
   // from regular season we create Divisions.
-
-  // Filter out null values so that we can only do anything with two valid DivisionIds.
-  awayTeam.reload();
-  homeTeam.reload();
   const divisionIds = [awayTeam.DivisionId, homeTeam.DivisionId].filter(d => d);
 
   if (game.playoff) {
@@ -73,5 +79,5 @@ const createGroupings = (game, awayTeam, homeTeam, season) => {
 };
 
 module.exports = {
-  createGroupings
+  createGroupingLink
 };

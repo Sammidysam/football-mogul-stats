@@ -1,7 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Division = sequelize.define('Division', {
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      unique: true
+    }
   }, {});
   Division.associate = function(models) {
     Division.belongsTo(models.Conference);
