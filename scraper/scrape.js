@@ -6,6 +6,7 @@ const cheerio = require('cheerio');
 const symlinkDir = require('symlink-dir');
 
 const models = require('../models');
+const divisionsConferences = require('./divisionsconferences.js');
 const seasons = require('./seasons.js');
 const teams = require('./teams.js');
 const games = require('./games.js');
@@ -51,7 +52,10 @@ models.sequelize.sync({ force: true })
 
       teams.findOrCreateTeams(gameStringMatch).spread((awayTeam, homeTeam) => {
         games.createGame(gameStringMatch, filename, season).then(game => {
-          teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam);
+          teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam)
+          .then(teamParticipations => {
+            divisionsConferences.createGroupings(game, awayTeam, homeTeam, season);
+          });
         });
       });
     });

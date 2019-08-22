@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     location: DataTypes.STRING
   }, {});
   Team.associate = function(models) {
+    Team.belongsTo(models.Division);
     Team.belongsToMany(models.Game, { through: models.TeamParticipation });
   };
   return Team;
