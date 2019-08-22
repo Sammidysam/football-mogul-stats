@@ -8,6 +8,8 @@ const createGroupings = (game, awayTeam, homeTeam, season) => {
   // from regular season we create Divisions.
 
   // Filter out null values so that we can only do anything with two valid DivisionIds.
+  awayTeam.reload();
+  homeTeam.reload();
   const divisionIds = [awayTeam.DivisionId, homeTeam.DivisionId].filter(d => d);
 
   if (game.playoff) {
@@ -60,8 +62,8 @@ const createGroupings = (game, awayTeam, homeTeam, season) => {
           } else {
             models.Division.create({})
             .then(division => {
-              division.addTeam(awayTeam);
-              division.addTeam(homeTeam);
+              awayTeam.setDivision(division);
+              homeTeam.setDivision(division);
             });
           }
         }
