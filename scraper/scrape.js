@@ -67,6 +67,8 @@ models.sequelize.sync({ force: true })
      * uniqueness required and the lack of knowledge of a name of a division /
      * conference, which would be the unique constraint required.
      * So, we can create them all after creating the links from the data above.
+     *
+     * I wonder if there is a better solution than this.
      */
     Promise.all(promises).then(result => {
       divisionsConferences.resolveGroupingLinks(result);
