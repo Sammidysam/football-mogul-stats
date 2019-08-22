@@ -55,7 +55,10 @@ const createGroupingLink = (game, awayTeam, homeTeam, season) => {
         if (combinedParticipations.length === 2) {
           // This is a workaround for a bug in Football Mogul 18 where the Jets and Giants
           // schedules are replaced.
-          const antiJetsType = season.year === 1998 && (awayTeam.name === 'Jets' || homeTeam.name === 'Jets') ? 'different' : 'same';
+          const antiJetsType = season.year === 1998 &&
+            (awayTeam.name === 'Jets' || homeTeam.name === 'Jets' ||
+            awayTeam.name === 'Giants' || homeTeam.name === 'Giants')
+            ? 'different' : 'same';
 
           return Promise.resolve({
             object: 'Division',
