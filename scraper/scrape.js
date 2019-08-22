@@ -38,26 +38,38 @@ const BOX_SCORE_REGEX = /Box-([0-9]*)-([0-9]*)\.htm$/;
  */
 models.sequelize.sync({ force: true })
 .then(() => {
-  find.eachfile(BOX_SCORE_REGEX, options.directory, f => {
-    const filename = path.basename(f);
-    const filenameMatch = filename.match(BOX_SCORE_REGEX);
+  find.file(BOX_SCORE_REGEX, options.directory, files => {
+    const promises = files.map(f => {
+      const filename = path.basename(f);
+      const filenameMatch = filename.match(BOX_SCORE_REGEX);
 
-    const data = fs.readFileSync(f, 'utf8');
-    const $ = cheerio.load(data);
+      const data = fs.readFileSync(f, 'utf8');
+      const $ = cheerio.load(data);
 
-    seasons.findOrCreateSeason(filenameMatch)
-    .spread((season, created) => {
-      const gameString = $('head title').text();
-      const gameStringMatch = gameString.match(/(.*): (.*) at (.*)/);
+      return seasons.findOrCreateSeason(filenameMatch)
+      .spread((season, created) => {
+        const gameString = $('head title').text();
+        const gameStringMatch = gameString.match(/(.*): (.*) at (.*)/);
 
-      teams.findOrCreateTeams(gameStringMatch).spread((awayTeam, homeTeam) => {
-        games.createGame(gameStringMatch, filename, season).then(game => {
-          teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam)
-          .then(teamParticipations => {
-            divisionsConferences.createGroupingLink(game, awayTeam, homeTeam, season);
-          });
-        });
+        return teams.findOrCreateTeams(gameStringMatch).spread((awayTeam, homeTeam) => (
+          games.createGame(gameStringMatch, filename, season).then(game => (
+            teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam)
+            .then(teamParticipations => (
+              divisionsConferences.createGroupingLink(game, awayTeam, homeTeam, season)
+            ))
+          ))
+        ))
       });
+    });
+
+    /**
+     * Asynchronous nature kills the ability to create divisions because of the
+     * uniqueness required and the lack of knowledge of a name of a division /
+     * conference, which would be the unique constraint required.
+     * So, we can create them all after creating the links from the data above.
+     */
+    Promise.all(promises).then(result => {
+      divisionsConferences.resolveGroupingLinks(result);
     });
   });
 });
