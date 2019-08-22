@@ -28,20 +28,44 @@ const createGroupings = (game, awayTeam, homeTeam, season) => {
 
     }
   } else {
-    models.Game.findAll({
+    // It feels like this should be one query.
+    models.TeamParticipation.findAll({
       where: {
-        playoff: false,
-        SeasonYear: season.year
+        TeamId: awayTeam.id
       },
       include: [{
-        model: models.Team,
+        model: models.Game,
         where: {
-          id: [awayTeam.id, homeTeam.id]
+          playoff: false,
+          SeasonYear: season.year
         }
       }]
     })
-    .then(games => {
-      console.log(games.length);
+    .then(awayParticipations => {
+      const gameIds = awayParticipations.map(tp => tp.Game.id);
+
+      models.TeamParticipation.findAll({
+        where: {
+          TeamId: homeTeam.id,
+          GameId: gameIds
+        }
+      })
+      .then(combinedParticipations => {
+        // combinedParticipations.length will be 1 if not same division,
+        // 2 if same division
+        if (combinedParticipations.length === 2) {
+          if (divisionIds.length > 0) {
+            awayTeam.setDivision(divisionIds[0]);
+            homeTeam.setDivision(divisionIds[0]);
+          } else {
+            models.Division.create({})
+            .then(division => {
+              division.addTeam(awayTeam);
+              division.addTeam(homeTeam);
+            });
+          }
+        }
+      });
     });
   }
 };
