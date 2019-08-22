@@ -54,7 +54,7 @@ models.sequelize.sync({ force: true })
         games.createGame(gameStringMatch, filename, season).then(game => {
           teamParticipations.createTeamParticipations($, game, awayTeam, homeTeam)
           .then(teamParticipations => {
-            divisionsConferences.createGroupings(game, awayTeam, homeTeam, season);
+            divisionsConferences.createGroupingLink(game, awayTeam, homeTeam, season);
           });
         });
       });

@@ -6,7 +6,8 @@ const SUPER_BOWL_WEEK = 4;
 /**
  * Returns a link object as such:
  * {
- *   type: "Conference"|"Division",
+ *   object: "Conference"|"Division",
+ *   type: "same"|"different"
  *   teamIds: [
  *     1,
  *     2
@@ -16,25 +17,15 @@ const SUPER_BOWL_WEEK = 4;
 const createGroupingLink = (game, awayTeam, homeTeam, season) => {
   // From playoff games we create Conferences;
   // from regular season we create Divisions.
-  const divisionIds = [awayTeam.DivisionId, homeTeam.DivisionId].filter(d => d);
-
   if (game.playoff) {
-    if (divisionIds.length !== 2) {
-      return;
-    }
-
-    models.Division.findAll({ where: { id: divisionIds } })
-    .then(divisions => {
-      const conferenceIds = divisions.map(d => d.ConferenceId);
-
-      models.Conference.findAll({ where: { id: conferenceIds } })
-      .then(conferences => {
-        console.log(conferences.length);
-      });
+    return Promise.resolve({
+      object: 'Conference',
+      type: game.week === SUPER_BOWL_WEEK ? 'different' : 'same',
+      teamIds: [
+        awayTeam.id,
+        homeTeam.id
+      ]
     });
-    if (game.week === SUPER_BOWL_WEEK) {
-
-    }
   } else {
     // It feels like this should be one query.
     models.TeamParticipation.findAll({
@@ -62,16 +53,14 @@ const createGroupingLink = (game, awayTeam, homeTeam, season) => {
         // combinedParticipations.length will be 1 if not same division,
         // 2 if same division
         if (combinedParticipations.length === 2) {
-          if (divisionIds.length > 0) {
-            awayTeam.setDivision(divisionIds[0]);
-            homeTeam.setDivision(divisionIds[0]);
-          } else {
-            models.Division.create({})
-            .then(division => {
-              awayTeam.setDivision(division);
-              homeTeam.setDivision(division);
-            });
-          }
+          return Promise.resolve({
+            object: 'Division',
+            type: 'same',
+            teamIds: [
+              awayTeam.id,
+              homeTeam.id
+            ]
+          });
         }
       });
     });
