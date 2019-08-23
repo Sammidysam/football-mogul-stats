@@ -8,4 +8,8 @@ router.get('/', (req, res) => (
   find.findAll(models.TeamParticipation, req.query, res)
 ));
 
+router.get('/:teamParticipationId', (req, res) => (
+  find.findByPk(models.TeamParticipation, req.params.teamParticipationId, res)
+));
+
 module.exports = router;
