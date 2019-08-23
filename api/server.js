@@ -6,6 +6,8 @@ const PORT = 3002;
 const DEVELOPMENT = 0;
 const ENVIRONMENT = DEVELOPMENT;
 
+const conferences = require('./conferences');
+const divisions = require('./divisions');
 const games = require('./games');
 const latest = require('./latest');
 const seasons = require('./seasons');
@@ -13,6 +15,8 @@ const teams = require('./teams');
 const teamParticipations = require('./teamparticipations');
 
 const routers = {
+  '/conferences': conferences,
+  '/divisions': divisions,
   '/games': games,
   '/latest': latest,
   '/seasons': seasons,
