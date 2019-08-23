@@ -71,7 +71,7 @@ models.sequelize.sync({ force: true })
      * I wonder if there is a better solution than this.
      */
     Promise.all(promises).then(result => {
-      divisionsConferences.resolveGroupingLinks(result);
+      divisionsConferences.resolveAndCommitGroupings(result);
     });
   });
 });

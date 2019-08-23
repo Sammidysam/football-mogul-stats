@@ -78,6 +78,10 @@ const createGroupingLink = (game, awayTeam, homeTeam, season) => {
   }
 };
 
+/**
+ * Returns an array containing an array of team ids grouped by division
+ * and a set of division indexes grouped by conference.
+ */
 const resolveGroupingLinks = links => {
   const divisionLinks = links.filter(r => r.object === 'Division');
   const conferenceLinks = links.filter(r => r.object === 'Conference');
@@ -85,11 +89,37 @@ const resolveGroupingLinks = links => {
   const divisions = linkHelper.linksToGroups(divisionLinks);
   const conferences = linkHelper.linksToGroups(conferenceLinks, divisions);
 
-  console.log(divisions);
-  console.log(conferences);
+  return [divisions.map(d => Array.from(d)), conferences.map(c => Array.from(c))];
+};
+
+// This simply resolves the links then creates the groups.
+const resolveAndCommitGroupings = links => {
+  const groupings = resolveGroupingLinks(links);
+  const divisions = groupings[0];
+  const conferences = groupings[1];
+
+  conferences.forEach(divisionIds => {
+    models.Conference.create({})
+    .then(conference => (
+      divisionIds.forEach(did => (
+        models.Division.create({
+          ConferenceId: conference.id
+        })
+        .then(division => {
+          const toDatabase = divisions[did].map(tid => ({
+            id: tid,
+            DivisionId: division.id
+          }));
+
+          // This is a bulk update.
+          models.Team.bulkCreate(toDatabase, { updateOnDuplicate: ['DivisionId'] });
+        })
+      ))
+    ));
+  });
 };
 
 module.exports = {
   createGroupingLink,
-  resolveGroupingLinks
+  resolveAndCommitGroupings
 };
