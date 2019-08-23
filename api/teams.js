@@ -2,21 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const models = require('../models');
-const common = require('./common.js');
+const find = require('./helpers/find.js');
 
 router.get('/', (req, res) => (
-  models.Team.findAll().then(teams => res.json(teams))
+  find.findAll(models.Team, req.query, res)
 ));
 
 router.get('/:teamId', (req, res) => (
-  models.Team.findByPk(req.params.teamId).then(team => {
-    if (team) {
-      res.json(team);
-    } else {
-      res.status(404);
-      res.json(common.ERROR_404);
-    }
-  })
+  find.findByPk(models.Team, req.params.teamId, res)
 ));
 
 module.exports = router;

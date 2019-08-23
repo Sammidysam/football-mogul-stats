@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const models = require('../models');
+const find = require('./helpers/find.js');
 
 router.get('/', (req, res) => (
-  models.TeamParticipation.findAll({ where: req.query }).then(teamParticipations => res.json(teamParticipations))
+  find.findAll(models.TeamParticipation, req.query, res)
 ));
 
 module.exports = router;
