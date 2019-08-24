@@ -17,6 +17,8 @@ router.get('/:seasonId/standings', (req, res) => {
   .then(season => (
     models.Team.findAll({})
     .then(teams => {
+      // Possible future optimization: mark two results at the same time.
+      // However, this would be hard to work with asynchronous calls.
       const promises = teams.map(team => (
         models.TeamParticipation.findAll({
           where: {
