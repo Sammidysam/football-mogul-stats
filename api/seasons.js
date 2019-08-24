@@ -18,44 +18,62 @@ router.get('/:seasonId/standings', (req, res) => {
     models.Team.findAll({})
     .then(teams => {
       const promises = teams.map(team => (
-        models.TeamParticipation.findAll({ where: { TeamId: team.id } })
+        models.TeamParticipation.findAll({
+          where: {
+            TeamId: team.id
+          },
+          include: [{
+            model: models.Game,
+            where: {
+              SeasonYear: season.year
+            }
+          }]
+        })
         .then(teamParticipations => (
-          models.Game.findAll({ where: { id: teamParticipations.map(tp => tp.GameId), SeasonYear: season.year } })
-          .then(games => (
-            models.TeamParticipation.findAll({
-              where: {
-                GameId: games.map(g => g.id),
-                TeamId: {
-                  [models.Sequelize.Op.not]: team.id
-                }
+          models.TeamParticipation.findAll({
+            where: {
+              GameId: teamParticipations.map(tp => tp.Game.id),
+              TeamId: {
+                [models.Sequelize.Op.not]: team.id
               }
-            })
-            .then(others => (
-              others.reduce((total, currentValue) => {
+            }
+          })
+          .then(others => (
+            {
+              TeamId: team.id,
+              ...others.reduce((total, currentValue) => {
                 const ours = teamParticipations.find(tp => tp.GameId === currentValue.GameId);
+                const toAdd = ours.Game.playoff ? total.postSeason : total.regularSeason;
 
                 if (ours.score > currentValue.score) {
-                  total.wins += 1;
+                  toAdd.wins += 1;
                 } else if (ours.score === currentValue.score) {
-                  total.ties += 1;
+                  toAdd.ties += 1;
                 } else {
-                  total.losses += 1;
+                  toAdd.losses += 1;
                 }
 
                 return total;
               }, {
-                wins: 0,
-                losses: 0,
-                ties: 0
+                regularSeason: {
+                  wins: 0,
+                  losses: 0,
+                  ties: 0
+                },
+                postSeason: {
+                  wins: 0,
+                  losses: 0,
+                  ties: 0
+                }
               })
-            ))
+            }
           ))
         ))
       ));
 
-      Promise.all(promises).then(result => {
-        return res.json(result)
-      });
+      Promise.all(promises).then(result => (
+        res.json(result)
+      ));
     })
   ))
 });
