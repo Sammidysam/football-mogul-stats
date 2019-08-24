@@ -1,16 +1,31 @@
-const ERROR_404 = { error: 'Not found' };
+const error404 = (req, res) => {
+  res.status(404);
+  res.json({
+    error: 'Not found'
+  });
+};
 
-const findAll = (model, query, res) => (
-  model.findAll({ where: query }).then(result => res.json(result))
+// This feels over-abstracted - consider shrinking again now that error404 exists.
+const findAll = (model, query) => (
+  model.findAll({ where: query })
 );
 
-const findByPk = (model, pk, res) => (
-  model.findByPk(pk).then(result => {
+const findByPk = (model, pk) => (
+  model.findByPk(pk)
+);
+
+const findAllResponse = (model, query, res) => (
+  findAll(model, query).then(result => res.json(result))
+);
+
+const findByPkResponse = (model, pk, res) => (
+  findByPk(model, pk).then(result => {
     if (result) {
       res.json(result);
     } else {
-      res.status(404);
-      res.json(ERROR_404);
+      // It would be more proper to accept a req object into this function,
+      // but it is not needed.
+      error404(null, res);
     }
   })
 );
