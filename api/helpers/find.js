@@ -31,6 +31,6 @@ const findByPkResponse = (model, pk, res) => (
 );
 
 module.exports = {
-  findAll,
-  findByPk
+  findAllResponse,
+  findByPkResponse
 };
