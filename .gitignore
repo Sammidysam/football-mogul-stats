@@ -71,3 +71,6 @@ fe/public/FootballMogul
 
 # Backing up various save files
 backup/
+
+# Mac folder files
+.DS_Store
