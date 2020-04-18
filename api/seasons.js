@@ -13,7 +13,7 @@ router.get('/:seasonId', (req, res) => (
 ));
 
 router.get('/:seasonId/standings', (req, res) => {
-  find.findByPk(models.Season, req.params.seasonId)
+  models.Season.findByPk(req.params.seasonId)
   .then(season => (
     models.Team.findAll({})
     .then(teams => {
