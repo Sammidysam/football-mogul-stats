@@ -26,9 +26,11 @@ class ConferenceStandings extends React.Component {
     const { divisions } = this.state;
     const { conference, standings, teams } = this.props;
 
+    const conferenceDivisions = divisions.filter(d => d.ConferenceId === conference.id);
+
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
-        {divisions.map(d => (
+        {conferenceDivisions.map(d => (
           <DivisionStandings
             key={d.id}
             division={d}
