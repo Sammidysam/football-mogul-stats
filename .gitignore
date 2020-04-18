@@ -68,3 +68,6 @@ config/config.json
 
 # Symlink to reference output, box scores
 fe/public/FootballMogul
+
+# Backing up various save files
+backup/
