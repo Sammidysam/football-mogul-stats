@@ -2,6 +2,8 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 
+import ConferenceStandings from './ConferenceStandings';
+
 const api = require('../api.js');
 
 class SeasonStandings extends React.Component {
@@ -9,7 +11,8 @@ class SeasonStandings extends React.Component {
     super(props);
 
     this.state = {
-      conferences: []
+      conferences: [],
+      teams: []
     }
   }
 
@@ -18,14 +21,27 @@ class SeasonStandings extends React.Component {
     .then(
       result => this.setState({ conferences: result })
     );
+
+    api.fetch('teams')
+    .then(
+      result => this.setState({ teams: result })
+    );
   }
 
   render() {
-    const { conferences } = this.state;
+    const { conferences, teams } = this.state;
+    const { standings, season } = this.props;
 
     return (
       <Box display="flex" flexDirection="row" alignItems="center">
-
+        {conferences.map(c => (
+          <ConferenceStandings
+            key={c.id}
+            conference={c}
+            standings={standings}
+            teams={teams}
+          />
+        ))}
       </Box>
     );
   }
