@@ -3,12 +3,11 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
 import GameList from './GameList.js';
 import WeekSelect from './WeekSelect.js';
+import SeasonSelect from './SeasonSelect.js';
 
 const api = require('../api.js');
 
@@ -52,15 +51,11 @@ class Schedule extends React.Component {
             <InputLabel>
               Year
             </InputLabel>
-            <Select
+            <SeasonSelect
               onChange={e => this.setState({ season: e.target.value })}
-              renderValue={e => e.year}
               value={season}
-            >
-              {seasons.map(s => (
-                <MenuItem value={s} key={s.year}>{s.year}</MenuItem>
-              ))}
-            </Select>
+              seasons={seasons}
+            />
           </FormControl>
 
           <FormControl>
