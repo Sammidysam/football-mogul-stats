@@ -8,7 +8,7 @@ Structure might have to change for future year upgrades.
 
 First, you will want to scrape your existing HTML output to create a working database:
 ```
-node scraper/scrape.js 'directory'
+node scraper/scrape.js -d 'directory'
 ```
 
 Then, you will want to run the backend server.
