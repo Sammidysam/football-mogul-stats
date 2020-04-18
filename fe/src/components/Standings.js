@@ -6,6 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 
 import SeasonSelect from './SeasonSelect.js';
+import SeasonStandings from './SeasonStandings.js';
 
 const api = require('../api.js');
 
@@ -14,9 +15,6 @@ class Standings extends React.Component {
     super(props);
 
     this.state = {
-      conferences: [],
-      divisions: [],
-      teams: [],
       seasons: [],
       season: {
         year: 2000
@@ -30,21 +28,6 @@ class Standings extends React.Component {
       result => this.setState({ season: result.season })
     );
 
-    api.fetch('conferences')
-    .then(
-      result => this.setState({ conferences: result })
-    );
-
-    api.fetch('divisions')
-    .then(
-      result => this.setState({ divisions: result })
-    );
-
-    api.fetch('teams')
-    .then(
-      result => this.setState({ teams: result })
-    );
-
     api.fetch('seasons')
     .then(
       result => this.setState({ seasons: result })
@@ -52,7 +35,7 @@ class Standings extends React.Component {
   }
 
   render() {
-    const { conferences, divisions, teams, seasons, season } = this.state;
+    const { seasons, season } = this.state;
 
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
@@ -70,6 +53,10 @@ class Standings extends React.Component {
             seasons={seasons}
           />
         </FormControl>
+
+        <SeasonStandings
+          season={season}
+        />
       </Box>
     );
   }
