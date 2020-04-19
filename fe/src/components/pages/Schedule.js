@@ -5,11 +5,11 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 
-import GameList from './GameList.js';
-import WeekSelect from './WeekSelect.js';
-import SeasonSelect from './SeasonSelect.js';
+import GameList from '../GameList.js';
+import WeekSelect from '../WeekSelect.js';
+import SeasonSelect from '../SeasonSelect.js';
 
-const api = require('../api.js');
+const api = require('../../api.js');
 
 class Schedule extends React.Component {
   constructor(props) {

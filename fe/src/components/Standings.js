@@ -1,12 +1,8 @@
 import React from 'react';
 
 import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Typography from '@material-ui/core/Typography';
 
-import SeasonSelect from './SeasonSelect.js';
-import SeasonStandings from './SeasonStandings.js';
+import ConferenceStandings from './ConferenceStandings';
 
 const api = require('../api.js');
 
@@ -15,49 +11,43 @@ class Standings extends React.Component {
     super(props);
 
     this.state = {
-      seasons: [],
-      season: {
-        year: 2000
-      }
-    };
+      conferences: [],
+      teams: [],
+      standings: []
+    }
   }
 
   componentDidMount() {
-    api.fetch('latest')
-    .then(result => this.setState({ season: result.season })
+    api.fetch('conferences')
+    .then(
+      result => this.setState({ conferences: result })
     );
 
-    api.fetch('seasons')
+    api.fetch('teams')
     .then(
-      result => this.setState({ seasons: result })
+      result => this.setState({ teams: result })
+    );
+
+    api.fetch('standings')
+    .then(
+      result => this.setState({ standings: result })
     );
   }
 
-  // Need a custom onChange to regrab standings to pass along to SeasonSelect.
-
   render() {
-    const { seasons, season } = this.state;
+    const { conferences, teams, standings } = this.state;
+    const { season } = this.props;
 
     return (
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h2">
-          Standings
-        </Typography>
-
-        <FormControl>
-          <InputLabel>
-            Year
-          </InputLabel>
-          <SeasonSelect
-            onChange={e => this.setState({ season: e.target.value })}
-            value={season}
-            seasons={seasons}
+      <Box display="flex" flexDirection="row" alignItems="center">
+        {conferences.map(c => (
+          <ConferenceStandings
+            key={c.id}
+            conference={c}
+            standings={standings}
+            teams={teams}
           />
-        </FormControl>
-
-        <SeasonStandings
-          season={season}
-        />
+        ))}
       </Box>
     );
   }

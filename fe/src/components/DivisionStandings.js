@@ -11,8 +11,7 @@ class DivisionStandings extends React.Component {
     const { division, standings, teams } = this.props;
 
     const divisionTeams = teams.filter(t => t.DivisionId === division.id);
-    const relevantStandings = standings.filter(s => divisionTeams.map(t => t.id).includes(s.TeamId))
-    .sort((a, b) => b.regularSeason.wins - a.regularSeason.wins);
+    const relevantStandings = standings.filter(s => divisionTeams.map(t => t.id).includes(s.TeamId));
 
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
