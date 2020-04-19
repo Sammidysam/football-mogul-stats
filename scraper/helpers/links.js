@@ -19,6 +19,7 @@ const linksToGroups = (links, indexObject) => (
       // Merge the two groups.
       const removed = total[indexes[0]];
 
+      removed.forEach(tid => total[indexes[1]].add(tid));
       warpedIndexes.forEach(tid => total[indexes[1]].add(tid));
       total.splice(indexes[0], 1);
     } else {
