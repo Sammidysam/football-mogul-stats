@@ -12,7 +12,8 @@ class SeasonStandings extends React.Component {
 
     this.state = {
       conferences: [],
-      teams: []
+      teams: [],
+      standings: []
     }
   }
 
@@ -26,11 +27,16 @@ class SeasonStandings extends React.Component {
     .then(
       result => this.setState({ teams: result })
     );
+
+    api.fetch('standings')
+    .then(
+      result => this.setState({ standings: result })
+    );
   }
 
   render() {
-    const { conferences, teams } = this.state;
-    const { standings, season } = this.props;
+    const { conferences, teams, standings } = this.state;
+    const { season } = this.props;
 
     return (
       <Box display="flex" flexDirection="row" alignItems="center">

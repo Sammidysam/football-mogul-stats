@@ -16,7 +16,6 @@ class Standings extends React.Component {
 
     this.state = {
       seasons: [],
-      standings: [],
       season: {
         year: 2000
       }
@@ -25,14 +24,8 @@ class Standings extends React.Component {
 
   componentDidMount() {
     api.fetch('latest')
-    .then(result => {
-      this.setState({ season: result.season });
-
-      api.fetch(`seasons/${result.season.year}/standings`)
-      .then(
-        standings => this.setState({ standings: standings })
-      );
-    });
+    .then(result => this.setState({ season: result.season })
+    );
 
     api.fetch('seasons')
     .then(
@@ -43,7 +36,7 @@ class Standings extends React.Component {
   // Need a custom onChange to regrab standings to pass along to SeasonSelect.
 
   render() {
-    const { seasons, standings, season } = this.state;
+    const { seasons, season } = this.state;
 
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
@@ -64,7 +57,6 @@ class Standings extends React.Component {
 
         <SeasonStandings
           season={season}
-          standings={standings}
         />
       </Box>
     );
