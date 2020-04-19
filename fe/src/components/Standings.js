@@ -17,6 +17,17 @@ class Standings extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.season.year !== prevProps.season.year) {
+      api.fetch('standings', {
+        year: this.props.season.year
+      })
+      .then(
+        result => this.setState({ standings: result })
+      );
+    }
+  }
+
   componentDidMount() {
     api.fetch('conferences')
     .then(
@@ -26,11 +37,6 @@ class Standings extends React.Component {
     api.fetch('teams')
     .then(
       result => this.setState({ teams: result })
-    );
-
-    api.fetch('standings')
-    .then(
-      result => this.setState({ standings: result })
     );
   }
 

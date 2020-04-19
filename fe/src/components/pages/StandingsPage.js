@@ -33,8 +33,6 @@ class StandingsPage extends React.Component {
     );
   }
 
-  // Need a custom onChange to regrab standings to pass along to SeasonSelect.
-
   render() {
     const { seasons, season } = this.state;
 
