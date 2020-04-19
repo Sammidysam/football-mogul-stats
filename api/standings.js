@@ -3,6 +3,17 @@ const router = express.Router();
 
 const models = require('../models');
 
+const DIVISION_AND_CONFERENCE = "divisionconference";
+const DIVISION = "division";
+const CONFERENCE = "conference";
+
+/**
+ * Provides the standings over a given time range and with some groupings, etc.
+ *
+ * Possible query values:
+ * year: controls the SeasonYear that gets handled.
+ * grouping: can be "division", "conference", or "division+conference".
+ */
 router.get('/', (req, res) => {
   // For efficiency's sake, we only want to make a query if necessary.
   const seasonQuery = Promise.resolve((
@@ -41,6 +52,7 @@ router.get('/', (req, res) => {
           .then(others => (
             {
               TeamId: team.id,
+              DivisionId: team.DivisionId,
               ...others.reduce((total, currentValue) => {
                 const ours = teamParticipations.find(tp => tp.GameId === currentValue.GameId);
                 const toAdd = ours.Game.playoff ? total.postSeason : total.regularSeason;
@@ -71,9 +83,38 @@ router.get('/', (req, res) => {
         ))
       ));
 
-      Promise.all(promises).then(result => (
-        res.json(result)
-      ));
+      Promise.all(promises).then(result => {
+        if (req.query.grouping === DIVISION_AND_CONFERENCE) {
+          models.Conference.findAll({
+            include: {
+              model: models.Division
+            }
+          })
+          .then(conferences => (
+            res.json(
+              conferences.map(c => ({
+                // This is rather unideal because we have to manually state which
+                // attributes of Division and Conference we pass along.
+                // I tried to make this more so modifying the object,
+                // but it did not really work out.
+                id: c.id,
+                name: c.name,
+                Divisions: c.Divisions.map(d => ({
+                  id: d.id,
+                  name: d.name,
+                  Teams: result.filter(t => t.DivisionId === d.id)
+                    .sort((a, b) => b.regularSeason.wins - a.regularSeason.wins)
+                }))
+              }))
+            )));
+        } else if (req.query.grouping === DIVISION) {
+
+        } else if (req.query.grouping === CONFERENCE) {
+
+        } else {
+          res.json(result);
+        }
+      });
     })
   ));
 });
