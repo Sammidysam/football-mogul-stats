@@ -93,15 +93,9 @@ router.get('/', (req, res) => {
           .then(conferences => (
             res.json(
               conferences.map(c => ({
-                // This is rather unideal because we have to manually state which
-                // attributes of Division and Conference we pass along.
-                // I tried to make this more so modifying the object,
-                // but it did not really work out.
-                id: c.id,
-                name: c.name,
+                ConferenceId: c.id,
                 Divisions: c.Divisions.map(d => ({
-                  id: d.id,
-                  name: d.name,
+                  DivisionId: d.id,
                   Teams: result.filter(t => t.DivisionId === d.id)
                     .sort((a, b) => b.regularSeason.wins - a.regularSeason.wins)
                 }))
