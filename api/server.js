@@ -1,7 +1,7 @@
 const express = require('express');
 const boolParser = require('express-query-boolean');
 const server = express();
-const PORT = 3002;
+const PORT = 3000;
 
 const DEVELOPMENT = 0;
 const ENVIRONMENT = DEVELOPMENT;
