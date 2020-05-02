@@ -7,6 +7,9 @@ const DIVISION_AND_CONFERENCE = "divisionconference";
 const DIVISION = "division";
 const CONFERENCE = "conference";
 
+// When sorting by wins, we should be sure that we include ties into consideration.
+const teamWins = teamStandings => teamStandings.regularSeason.wins + (0.5 * teamStandings.regularSeason.ties);
+
 /**
  * Provides the standings over a given time range and with some groupings, etc.
  *
@@ -97,7 +100,7 @@ router.get('/', (req, res) => {
                 Divisions: c.Divisions.map(d => ({
                   DivisionId: d.id,
                   Teams: result.filter(t => t.DivisionId === d.id)
-                    .sort((a, b) => b.regularSeason.wins - a.regularSeason.wins)
+                    .sort((a, b) => teamWins(b) - teamWins(a))
                 }))
               }))
             )));
