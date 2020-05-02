@@ -62,10 +62,13 @@ router.get('/', (req, res) => {
 
                 if (ours.score > currentValue.score) {
                   toAdd.wins += 1;
+                  toAdd.winIds.push(currentValue.TeamId);
                 } else if (ours.score === currentValue.score) {
                   toAdd.ties += 1;
+                  toAdd.tieIds.push(currentValue.TeamId);
                 } else {
                   toAdd.losses += 1;
+                  toAdd.lossIds.push(currentValue.TeamId);
                 }
 
                 return total;
@@ -73,12 +76,18 @@ router.get('/', (req, res) => {
                 regularSeason: {
                   wins: 0,
                   losses: 0,
-                  ties: 0
+                  ties: 0,
+                  winIds: [],
+                  lossIds: [],
+                  tieIds: []
                 },
                 postSeason: {
                   wins: 0,
                   losses: 0,
-                  ties: 0
+                  ties: 0,
+                  winIds: [],
+                  lossIds: [],
+                  tieIds: []
                 }
               })
             }
@@ -93,17 +102,20 @@ router.get('/', (req, res) => {
               model: models.Division
             }
           })
-          .then(conferences => (
-            res.json(
-              conferences.map(c => ({
-                ConferenceId: c.id,
-                Divisions: c.Divisions.map(d => ({
-                  DivisionId: d.id,
-                  Teams: result.filter(t => t.DivisionId === d.id)
-                    .sort((a, b) => teamWins(b) - teamWins(a))
-                }))
+          .then(conferences => {
+            grouped = conferences.map(c => ({
+              ConferenceId: c.id,
+              Divisions: c.Divisions.map(d => ({
+                DivisionId: d.id,
+                // This passes through result c.Division.length times,
+                // so it could be more efficient?
+                Teams: result.filter(t => t.DivisionId === d.id)
+                  .sort((a, b) => teamWins(b) - teamWins(a))
               }))
-            )));
+            }));
+
+            res.json(grouped);
+          });
         } else if (req.query.grouping === DIVISION) {
 
         } else if (req.query.grouping === CONFERENCE) {
