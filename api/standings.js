@@ -16,6 +16,102 @@ const instances = (array, value) => array.reduce((n, val) => (
   n + (val === value)
 ), 0);
 
+const versusOthers = (teams, group) => {
+  // In division two clubs rule 1:
+  const versusOthersCalc = group.map(team => {
+    const standings = group.reduce((total, currentValue) => {
+      if (currentValue !== team) {
+        const current = teams.find(t => t.TeamId === team);
+        total.ranking = current.ranking;
+
+        total.wins += instances(current.regularSeason.winIds, currentValue);
+        total.losses += instances(current.regularSeason.lossIds, currentValue);
+        total.ties += instances(current.regularSeason.tieIds, currentValue);
+      }
+
+      return total;
+    },
+    {
+      wins: 0,
+      losses: 0,
+      ties: 0
+    });
+
+    return {
+      id: team,
+      ranking: standings.ranking,
+      percentage: winPercentage(standings)
+    }
+  }).sort((a, b) => b.percentage - a.percentage);
+
+  // If we have differentiation, we need to sort based on this.
+  if (versusOthersCalc[0].percentage !== versusOthersCalc[versusOthersCalc.length - 1].percentage) {
+    const ranked = [...versusOthersCalc].sort((a, b) => a.ranking - b.ranking);
+    const localTeams = versusOthersCalc.map(t => teams[t.ranking]);
+
+    versusOthersCalc.forEach((t, i) => {
+      teams[ranked[i].ranking] = localTeams.find(team => team.TeamId === t.id);
+      // This magic string should be a variable in the final JSON.
+      teams[ranked[i].ranking].tiebreaker = {
+        type: "head-to-head",
+        percentage: t.percentage
+      };
+    });
+
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const groupBy = (teams, func) => {
+  const map = new Map();
+
+  teams.forEach((t, i) => {
+    // If this is an outward-facing variable, it probably needs
+    // to be incremented by 1.
+    // Not a worry for now.
+    // This should probably not be returned in the final JSON.
+    t.ranking = i;
+
+    const wins = func(t.regularSeason);
+
+    if (map.has(wins)) {
+      map.get(wins).push(t.TeamId);
+    } else {
+      map.set(func(t.regularSeason), [t.TeamId]);
+    }
+  });
+
+  return map;
+};
+
+const sortBy = (teams, funcs) => {
+  const currentFunc = funcs[0];
+
+  // If we are out of ways to sort, we will give up.
+  if (!currentFunc) {
+    return teams;
+  }
+
+  // Need to genericize.
+  // Grouping function is probably different than the sorting function - but how?
+  const map = groupBy(teams, teamWins);
+
+  map.forEach(group => {
+    if (group.length > 1) {
+      // We need to sort these teams against each other.
+      if (group.length === 2) {
+        if (!currentFunc(teams, group)) {
+          sortBy(teams, funcs.slice(1));
+        }
+      } else {
+
+      }
+    }
+  });
+};
+
 /**
  * Provides the standings over a given time range and with some groupings, etc.
  *
@@ -122,74 +218,7 @@ router.get('/', (req, res) => {
 
             grouped.forEach(c => {
               c.Divisions.forEach(d => {
-                const winsMap = new Map();
-
-                d.Teams.forEach((t, i) => {
-                  // If this is an outward-facing variable, it probably needs
-                  // to be incremented by 1.
-                  // Not a worry for now.
-                  // This should probably not be returned in the final JSON.
-                  t.ranking = i;
-
-                  const wins = teamWins(t.regularSeason);
-
-                  if (winsMap.has(wins)) {
-                    winsMap.get(wins).push(t.TeamId);
-                  } else {
-                    winsMap.set(teamWins(t.regularSeason), [t.TeamId]);
-                  }
-                });
-
-                winsMap.forEach((value, key) => {
-                  if (value.length > 1) {
-                    // We need to sort these teams against each other.
-                    if (value.length === 2) {
-                      // In division two clubs rule 1:
-                      const versusOthers = value.map(team => {
-                        const standings = value.reduce((total, currentValue) => {
-                          if (currentValue !== team) {
-                            const current = d.Teams.find(t => t.TeamId === team);
-                            total.ranking = current.ranking;
-
-                            total.wins += instances(current.regularSeason.winIds, currentValue);
-                            total.losses += instances(current.regularSeason.lossIds, currentValue);
-                            total.ties += instances(current.regularSeason.tieIds, currentValue);
-                          }
-
-                          return total;
-                        },
-                        {
-                          wins: 0,
-                          losses: 0,
-                          ties: 0
-                        });
-
-                        return {
-                          id: team,
-                          ranking: standings.ranking,
-                          percentage: winPercentage(standings)
-                        }
-                      }).sort((a, b) => b.percentage - a.percentage);
-
-                      // If we have differentiation, we need to sort based on this.
-                      if (versusOthers[0].percentage !== versusOthers[versusOthers.length - 1].percentage) {
-                        const ranked = [...versusOthers].sort((a, b) => a.ranking - b.ranking);
-                        const teams = versusOthers.map(t => d.Teams[t.ranking]);
-
-                        versusOthers.forEach((t, i) => {
-                          d.Teams[ranked[i].ranking] = teams.find(team => team.TeamId === t.id);
-                          // This magic string should be a variable in the final JSON.
-                          d.Teams[ranked[i].ranking].tiebreaker = {
-                            type: "head-to-head",
-                            percentage: t.percentage
-                          };
-                        });
-                      }
-                    } else {
-
-                    }
-                  }
-                });
+                sortBy(d.Teams, [versusOthers]);
               });
             });
 
