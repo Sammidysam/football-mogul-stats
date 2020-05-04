@@ -179,7 +179,10 @@ router.get('/', (req, res) => {
                         versusOthers.forEach((t, i) => {
                           d.Teams[ranked[i].ranking] = teams.find(team => team.TeamId === t.id);
                           // This magic string should be a variable in the final JSON.
-                          d.Teams[ranked[i].ranking].tiebreaker = "head-to-head";
+                          d.Teams[ranked[i].ranking].tiebreaker = {
+                            type: "head-to-head",
+                            percentage: t.percentage
+                          };
                         });
                       }
                     } else {
