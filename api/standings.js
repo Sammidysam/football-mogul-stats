@@ -9,6 +9,7 @@ const CONFERENCE = "conference";
 
 // When sorting by wins, we should be sure that we include ties into consideration.
 const teamWins = teamStandings => teamStandings.wins + (0.5 * teamStandings.ties);
+const teamRSWins = team => teamWins(team.regularSeason);
 const totalGames = teamStandings => teamStandings.wins + teamStandings.losses + teamStandings.ties;
 const winPercentage = teamStandings => teamWins(teamStandings) / totalGames(teamStandings);
 
@@ -16,17 +17,17 @@ const instances = (array, value) => array.reduce((n, val) => (
   n + (val === value)
 ), 0);
 
-const versusOthers = (teams, group) => {
+const versusOthers = (group, teams) => {
   // In division two clubs rule 1:
-  const versusOthersCalc = group.map(team => {
-    const standings = group.reduce((total, currentValue) => {
-      if (currentValue !== team) {
-        const current = teams.find(t => t.TeamId === team);
-        total.ranking = current.ranking;
+  const versusOthersCalc = group.map(entry => {
+    const standings = group.reduce((total, currentEntry) => {
+      if (currentEntry.id !== entry.id) {
+        const current = teams.find(t => t.TeamId === entry.id);
+        total.ranking = entry.ranking;
 
-        total.wins += instances(current.regularSeason.winIds, currentValue);
-        total.losses += instances(current.regularSeason.lossIds, currentValue);
-        total.ties += instances(current.regularSeason.tieIds, currentValue);
+        total.wins += instances(current.regularSeason.winIds, currentEntry.id);
+        total.losses += instances(current.regularSeason.lossIds, currentEntry.id);
+        total.ties += instances(current.regularSeason.tieIds, currentEntry.id);
       }
 
       return total;
@@ -38,7 +39,7 @@ const versusOthers = (teams, group) => {
     });
 
     return {
-      id: team,
+      id: entry.id,
       ranking: standings.ranking,
       percentage: winPercentage(standings)
     }
@@ -68,48 +69,40 @@ const groupBy = (teams, func) => {
   const map = new Map();
 
   teams.forEach((t, i) => {
-    // If this is an outward-facing variable, it probably needs
-    // to be incremented by 1.
-    // Not a worry for now.
-    // This should probably not be returned in the final JSON.
-    t.ranking = i;
+    const value = func(t);
 
-    const wins = func(t.regularSeason);
-
-    if (map.has(wins)) {
-      map.get(wins).push(t.TeamId);
+    if (map.has(value)) {
+      map.get(value).push({
+        id: t.TeamId,
+        ranking: i
+      });
     } else {
-      map.set(func(t.regularSeason), [t.TeamId]);
+      map.set(value, [{
+        id: t.TeamId,
+        ranking: i
+      }]);
     }
   });
 
   return map;
 };
 
-const sortBy = (teams, funcs) => {
+const sortGroup = (group, funcs, teams) => {
+  // If our group is one team, we will not try to sort.
+  if (group.length === 1) {
+    return;
+  }
+
   const currentFunc = funcs[0];
 
   // If we are out of ways to sort, we will give up.
   if (!currentFunc) {
-    return teams;
+    return;
   }
 
-  // Need to genericize.
-  // Grouping function is probably different than the sorting function - but how?
-  const map = groupBy(teams, teamWins);
-
-  map.forEach(group => {
-    if (group.length > 1) {
-      // We need to sort these teams against each other.
-      if (group.length === 2) {
-        if (!currentFunc(teams, group)) {
-          sortBy(teams, funcs.slice(1));
-        }
-      } else {
-
-      }
-    }
-  });
+  if (!currentFunc(group, teams)) {
+    sortGroup(group, funcs.slice(1), teams);
+  }
 };
 
 /**
@@ -218,7 +211,11 @@ router.get('/', (req, res) => {
 
             grouped.forEach(c => {
               c.Divisions.forEach(d => {
-                sortBy(d.Teams, [versusOthers]);
+                const winsMap = groupBy(d.Teams, teamRSWins);
+
+                winsMap.forEach(group => {
+                  sortGroup(group, [versusOthers], d.Teams)
+                });
               });
             });
 
