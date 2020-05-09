@@ -45,48 +45,59 @@ const versusOthers = (group, teams) => {
     }
   }).sort((a, b) => b.percentage - a.percentage);
 
-  // If we have differentiation, we need to sort based on this.
-  if (versusOthersCalc[0].percentage !== versusOthersCalc[versusOthersCalc.length - 1].percentage) {
-    const ranked = [...versusOthersCalc].sort((a, b) => a.ranking - b.ranking);
-    const localTeams = versusOthersCalc.map(t => teams[t.ranking]);
+  const percentageGrouping = groupBy(versusOthersCalc, "percentage", {
+    idFunc: "id",
+    rankingFunc: "ranking"
+  });
 
-    versusOthersCalc.forEach((t, i) => {
-      teams[ranked[i].ranking] = localTeams.find(team => team.TeamId === t.id);
-      // This magic string should be a variable in the final JSON.
-      teams[ranked[i].ranking].tiebreaker = {
+  // If we have tied teams, we will need to sort them separately.
+  percentageGrouping.forEach((pg, key) => {
+    if (pg.length > 1) {
+      sortGroup(pg, [], teams);
+      percentageGrouping.delete(key);
+    }
+  });
+
+  if (percentageGrouping.size > 0) {
+    const array = Array.from(percentageGrouping);
+
+    // Each grouping must have only one member due to the above loop.
+    const rankings = array.map(([key, value]) => value[0].ranking).sort();
+    const localTeams = array.map(([key, value]) => teams[value[0].ranking]);
+
+    array.forEach(([key, value], index) => {
+      teams[rankings[index]] = localTeams.find(team => team.TeamId === value[0].id);
+
+      // Should this magic string be a variable later?
+      teams[rankings[index]].tiebreaker = {
         type: "head-to-head",
-        percentage: t.percentage
+        percentage: key
       };
     });
-
-    return true;
-  } else {
-    return false;
   }
 };
 
-const groupBy = (teams, func) => {
+const groupBy = (teams, func, options = { idFunc: "TeamId" }) => {
   const map = new Map();
 
   teams.forEach((t, i) => {
-    const value = func(t);
+    const value = typeof(func) === "function" ? func(t) : t[func];
+    const object = {
+      id: t[options.idFunc],
+      ranking: options.rankingFunc ? t[options.rankingFunc] : i
+    };
 
     if (map.has(value)) {
-      map.get(value).push({
-        id: t.TeamId,
-        ranking: i
-      });
+      map.get(value).push(object);
     } else {
-      map.set(value, [{
-        id: t.TeamId,
-        ranking: i
-      }]);
+      map.set(value, [object]);
     }
   });
 
   return map;
 };
 
+// TODO refactor out the funcs process, as it does not seem relevant.
 const sortGroup = (group, funcs, teams) => {
   // If our group is one team, we will not try to sort.
   if (group.length === 1) {
@@ -100,9 +111,7 @@ const sortGroup = (group, funcs, teams) => {
     return;
   }
 
-  if (!currentFunc(group, teams)) {
-    sortGroup(group, funcs.slice(1), teams);
-  }
+  currentFunc(group, teams);
 };
 
 /**
