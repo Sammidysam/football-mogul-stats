@@ -18,7 +18,7 @@ const instances = (array, value) => array.reduce((n, val) => (
 ), 0);
 
 const versusOthers = (group, teams) => {
-  // In division two clubs rule 1:
+  // In/out division rule 1:
   const versusOthersCalc = group.map(entry => {
     const standings = group.reduce((total, currentEntry) => {
       if (currentEntry.id !== entry.id) {
@@ -53,7 +53,7 @@ const versusOthers = (group, teams) => {
   // If we have tied teams, we will need to sort them separately.
   percentageGrouping.forEach((pg, key) => {
     if (pg.length > 1) {
-      sortGroup(pg, [], teams);
+      sortGroup(pg, withinTeams, teams);
       percentageGrouping.delete(key);
     }
   });
@@ -71,6 +71,68 @@ const versusOthers = (group, teams) => {
       // Should this magic string be a variable later?
       teams[rankings[index]].tiebreaker = {
         type: "head-to-head",
+        percentage: key
+      };
+    });
+  }
+};
+
+// This is just like versusOthers and probably needs to be refactored.
+const withinTeams = (group, teams) => {
+  // In division rule 2:
+  const withinTeamsCalc = group.map(entry => {
+    const current = teams.find(t => t.TeamId === entry.id);
+
+    const standings = teams.reduce((total, currentEntry) => {
+      if (currentEntry.TeamId !== entry.id) {
+        total.ranking = entry.ranking;
+
+        total.wins += instances(current.regularSeason.winIds, currentEntry.TeamId);
+        total.losses += instances(current.regularSeason.lossIds, currentEntry.TeamId);
+        total.ties += instances(current.regularSeason.tieIds, currentEntry.TeamId);
+      }
+
+      return total;
+    },
+    {
+      wins: 0,
+      losses: 0,
+      ties: 0
+    });
+
+    return {
+      id: entry.id,
+      ranking: standings.ranking,
+      percentage: winPercentage(standings)
+    }
+  }).sort((a, b) => b.percentage - a.percentage);
+
+  const percentageGrouping = groupBy(withinTeamsCalc, "percentage", {
+    idFunc: "id",
+    rankingFunc: "ranking"
+  });
+
+  // If we have tied teams, we will need to sort them separately.
+  percentageGrouping.forEach((pg, key) => {
+    if (pg.length > 1) {
+      sortGroup(pg, null, teams);
+      percentageGrouping.delete(key);
+    }
+  });
+
+  if (percentageGrouping.size > 0) {
+    const array = Array.from(percentageGrouping);
+
+    // Each grouping must have only one member due to the above loop.
+    const rankings = array.map(([key, value]) => value[0].ranking).sort();
+    const localTeams = array.map(([key, value]) => teams[value[0].ranking]);
+
+    array.forEach(([key, value], index) => {
+      teams[rankings[index]] = localTeams.find(team => team.TeamId === value[0].id);
+
+      // Should this magic string be a variable later?
+      teams[rankings[index]].tiebreaker = {
+        type: "within-division",
         percentage: key
       };
     });
@@ -97,21 +159,13 @@ const groupBy = (teams, func, options = { idFunc: "TeamId" }) => {
   return map;
 };
 
-// TODO refactor out the funcs process, as it does not seem relevant.
-const sortGroup = (group, funcs, teams) => {
+const sortGroup = (group, func, teams) => {
   // If our group is one team, we will not try to sort.
-  if (group.length === 1) {
+  if (group.length === 1 || !func) {
     return;
   }
 
-  const currentFunc = funcs[0];
-
-  // If we are out of ways to sort, we will give up.
-  if (!currentFunc) {
-    return;
-  }
-
-  currentFunc(group, teams);
+  func(group, teams);
 };
 
 /**
@@ -223,7 +277,7 @@ router.get('/', (req, res) => {
                 const winsMap = groupBy(d.Teams, teamRSWins);
 
                 winsMap.forEach(group => {
-                  sortGroup(group, [versusOthers], d.Teams)
+                  sortGroup(group, versusOthers, d.Teams)
                 });
               });
             });
