@@ -1,6 +1,7 @@
 const DIVISION_AND_CONFERENCE = "divisionconference";
 const DIVISION = "division";
 const CONFERENCE = "conference";
+const SORTED = "sorted";
 
 const models = require('../../models');
 
@@ -29,6 +30,8 @@ const groupResult = (req, result, sortingFunc) => {
 
   } else if (req.query.grouping === CONFERENCE) {
 
+  } else if (req.query.grouping === SORTED) {
+    return Promise.resolve(result.sort(sortingFunc));
   } else {
     return Promise.resolve(result);
   }
@@ -38,5 +41,6 @@ module.exports = {
   DIVISION_AND_CONFERENCE,
   DIVISION,
   CONFERENCE,
+  SORTED,
   groupResult
 };

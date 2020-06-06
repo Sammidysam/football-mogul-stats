@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const groupable = require('./helpers/groupable.js');
 const rankable = require('./helpers/rankable.js');
 
 router.get('/', (req, res) => (
@@ -30,16 +31,22 @@ router.get('/', (req, res) => (
     }
   )
   .then(result => {
-    const sorted = result.sort((a, b) => b.regularSeason.offense - a.regularSeason.offense);
-    sorted.forEach((t, index) => t.ranking = index + 1);
+    groupable.groupResult(
+      req,
+      result,
+      (a, b) => b.regularSeason.offense - a.regularSeason.offense
+    )
+    .then(grouped => {
+      grouped.forEach((t, index) => t.ranking = index + 1);
 
-    sorted.forEach(t => {
-      t.regularSeason.opponentIds = t.regularSeason.opponentIds.map(oid => ({
-        [oid]: sorted.find(it => it.TeamId === oid).ranking
-      }))
-    });
+      grouped.forEach(t => {
+        t.regularSeason.opponentIds = t.regularSeason.opponentIds.map(oid => ({
+          [oid]: grouped.find(it => it.TeamId === oid).ranking
+        }))
+      });
 
-    res.json(result);
+      res.json(grouped);
+    })
   })
 ));
 

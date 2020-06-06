@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const models = require('../models');
 const groupable = require('./helpers/groupable.js');
 const rankable = require('./helpers/rankable.js');
 
