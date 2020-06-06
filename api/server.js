@@ -10,6 +10,7 @@ const conferences = require('./conferences');
 const divisions = require('./divisions');
 const games = require('./games');
 const latest = require('./latest');
+const rankings = require('./rankings');
 const seasons = require('./seasons');
 const standings = require('./standings');
 const teams = require('./teams');
@@ -20,6 +21,7 @@ const routers = {
   '/divisions': divisions,
   '/games': games,
   '/latest': latest,
+  '/rankings': rankings,
   '/seasons': seasons,
   '/standings': standings,
   '/teams': teams,
