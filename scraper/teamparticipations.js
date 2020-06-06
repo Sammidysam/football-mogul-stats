@@ -24,12 +24,14 @@ const getPassingYards = ($, side) => {
 };
 
 const createTeamParticipations = ($, game, awayTeam, homeTeam) => {
+  // Needs to become more scalable.
   return game.addTeam(awayTeam, {
     through: {
       home: false,
       score: getScore($, AWAY),
       rushingYards: getRushingYards($, AWAY),
-      passingYards: getPassingYards($, AWAY)
+      passingYards: getPassingYards($, AWAY),
+      offenseYards: getRushingYards($, AWAY) + getPassingYards($, AWAY)
     }
   })
   .then(away => (
@@ -38,7 +40,8 @@ const createTeamParticipations = ($, game, awayTeam, homeTeam) => {
         home: true,
         score: getScore($, HOME),
         rushingYards: getRushingYards($, HOME),
-        passingYards: getPassingYards($, HOME)
+        passingYards: getPassingYards($, HOME),
+        offenseYards: getRushingYards($, HOME) + getPassingYards($, HOME)
       }
     })
     .then(home => (

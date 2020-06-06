@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
+const models = require('../models');
 const groupable = require('./helpers/groupable.js');
 const rankable = require('./helpers/rankable.js');
 
 const SPECIAL_VARS = {
-  "offense": (ours, currentValue) => ours.rushingYards + ours.passingYards,
-  "defense": (ours, currentValue) => currentValue.rushingYards + currentValue.passingYards
+  "defenseYards": (ours, currentValue) => currentValue.offenseYards
 };
 const SPECIAL_VARS_LIST = Object.keys(SPECIAL_VARS);
 
-router.get('/:variable', (req, res) => {
-  const variables = [req.params.variable].concat(req.query.include ? req.query.include : []);
+router.get('/', (req, res) => {
+  const variables = req.query.variable ? (Array.isArray(req.query.variables) || [req.query.variable]) : models.TeamParticipation.rankingVariables.concat(SPECIAL_VARS_LIST);
 
-  // Build the function to
+  // Build the function to populate the data object.
   const dataFunction = (toAdd, ours, currentValue) => (
     variables.forEach(v => (
       toAdd[v] += SPECIAL_VARS_LIST.includes(v) ? SPECIAL_VARS[v](ours, currentValue) : ours[v]
