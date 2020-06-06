@@ -1,6 +1,7 @@
 const models = require('../../models');
 
 const produceTeamData = (req, reduceFunc, reduceObj) => {
+  // For efficiency's sake, we only want to make a query if necessary.
   const seasonQuery = Promise.resolve((
     req.query.year ?
       models.Season.findAll({ where: { year: req.query.year } }) :
@@ -11,6 +12,8 @@ const produceTeamData = (req, reduceFunc, reduceObj) => {
   .then(seasons => (
     models.Team.findAll({})
     .then(teams => {
+      // Possible future optimization: mark two results at the same time.
+      // However, this would be hard to work with asynchronous calls.
       const promises = teams.map(team => (
         models.TeamParticipation.findAll({
           where: {
