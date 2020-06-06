@@ -76,7 +76,7 @@ class GameList extends React.Component {
                     </Box>
                   </Typography>
                   <Typography>
-                    <a href={g.recapLink}>
+                    <a href={g.recapLink} target="_blank">
                       Recap
                     </a>
                   </Typography>
@@ -88,7 +88,7 @@ class GameList extends React.Component {
                     </Box>
                   </Typography>
                   <Typography>
-                    <a href={g.boxScoreLink}>
+                    <a href={g.boxScoreLink} target="_blank">
                       Box Score
                     </a>
                   </Typography>

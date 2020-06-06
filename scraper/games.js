@@ -3,12 +3,13 @@ const models = require('../models');
 
 const WEEK_REGEX = /Week ([0-9]*)/;
 
-const PLAYOFF_WEEKS = [
-  'Wild Card',
-  'Division Round',
-  'Conference Championship',
-  'Super Bowl'
-];
+const PLAYOFF_WEEKS = {
+  'Wild Card': 1,
+  'Division Round': 2,
+  'AFC Title Game': 3,
+  'NFC Title Game': 3,
+  'Super Bowl': 4
+};
 
 /**
  * Returns the week number and if this game is a playoff game or not.
@@ -22,7 +23,7 @@ const weekStatus = week => {
     week: match[1],
     playoff: false
   } : {
-    week: PLAYOFF_WEEKS.indexOf(week) + 1,
+    week: PLAYOFF_WEEKS[week],
     playoff: true
   };
 };
