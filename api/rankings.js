@@ -46,16 +46,19 @@ router.get('/', (req, res) => {
 
                 toAdd.offense += ours.rushingYards + ours.passingYards;
                 toAdd.defense += currentValue.rushingYards + currentValue.passingYards;
+                toAdd.opponentIds.push(currentValue.TeamId);
 
                 return total;
               }, {
                 regularSeason: {
                   offense: 0,
-                  defense: 0
+                  defense: 0,
+                  opponentIds: []
                 },
                 postSeason: {
                   offense: 0,
-                  defense: 0
+                  defense: 0,
+                  opponentIds: []
                 }
               })
             }
@@ -64,7 +67,16 @@ router.get('/', (req, res) => {
       ));
 
       Promise.all(promises).then(result => {
-        res.json(result.sort((a, b) => b.regularSeason.offense - a.regularSeason.offense));
+        const sorted = result.sort((a, b) => b.regularSeason.offense - a.regularSeason.offense);
+        sorted.forEach((t, index) => t.ranking = index + 1);
+
+        sorted.forEach(t => {
+          t.regularSeason.opponentIds = t.regularSeason.opponentIds.map(oid => ({
+            [oid]: sorted.find(it => it.TeamId === oid).ranking
+          }))
+        });
+
+        res.json(sorted);
       });
     })
   ));
