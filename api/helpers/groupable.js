@@ -14,8 +14,8 @@ const groupResult = (req, result, sortingFunc) => {
         model: models.Division
       }
     })
-    .then(conferences => {
-      const grouped = conferences.map(c => ({
+    .then(conferences => (
+      conferences.map(c => ({
         ConferenceId: c.id,
         Divisions: c.Divisions.map(d => ({
           DivisionId: d.id,
@@ -24,14 +24,34 @@ const groupResult = (req, result, sortingFunc) => {
           Teams: result.filter(t => t.DivisionId === d.id)
             .sort(sortingFunc)
         }))
-      }));
-
-      return grouped;
-    });
+      }))
+    ));
   } else if (groupingQuery === DIVISION) {
-
+    return models.Division.findAll({})
+    .then(divisions => (
+      divisions.map(d => ({
+        DivisionId: d.id,
+        Teams: result.filter(t => t.DivisionId === d.id)
+          .sort(sortingFunc)
+      }))
+    ));
   } else if (groupingQuery === CONFERENCE) {
+    return models.Conference.findAll({
+      include: {
+        model: models.Division
+      }
+    })
+    .then(conferences => (
+      conferences.map(c => {
+        const divisionIds = c.Divisions.map(d => d.id);
 
+        return {
+          ConferenceId: c.id,
+          Teams: result.filter(t => divisionIds.includes(t.DivisionId))
+            .sort(sortingFunc)
+        };
+      })
+    ));
   } else if (groupingQuery === SORTED) {
     return Promise.resolve(result.sort(sortingFunc));
   } else {
