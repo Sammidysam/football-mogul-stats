@@ -6,7 +6,9 @@ const SORTED = "sorted";
 const models = require('../../models');
 
 const groupResult = (req, result, sortingFunc) => {
-  if (req.query.grouping === DIVISION_AND_CONFERENCE) {
+  const groupingQuery = (req && req.query) ? req.query.grouping : req;
+
+  if (groupingQuery === DIVISION_AND_CONFERENCE) {
     return models.Conference.findAll({
       include: {
         model: models.Division
@@ -26,11 +28,11 @@ const groupResult = (req, result, sortingFunc) => {
 
       return grouped;
     });
-  } else if (req.query.grouping === DIVISION) {
+  } else if (groupingQuery === DIVISION) {
 
-  } else if (req.query.grouping === CONFERENCE) {
+  } else if (groupingQuery === CONFERENCE) {
 
-  } else if (req.query.grouping === SORTED) {
+  } else if (groupingQuery === SORTED) {
     return Promise.resolve(result.sort(sortingFunc));
   } else {
     return Promise.resolve(result);
