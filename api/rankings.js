@@ -4,40 +4,58 @@ const router = express.Router();
 const groupable = require('./helpers/groupable.js');
 const rankable = require('./helpers/rankable.js');
 
-router.get('/', (req, res) => (
+const SPECIAL_VARS = {
+  "offense": (ours, currentValue) => ours.rushingYards + ours.passingYards,
+  "defense": (ours, currentValue) => currentValue.rushingYards + currentValue.passingYards
+};
+const SPECIAL_VARS_LIST = Object.keys(SPECIAL_VARS);
+
+router.get('/:variable', (req, res) => {
+  const variables = [req.params.variable].concat(req.query.include ? req.query.include : []);
+
+  // Build the function to
+  const dataFunction = (toAdd, ours, currentValue) => (
+    variables.forEach(v => (
+      toAdd[v] += SPECIAL_VARS_LIST.includes(v) ? SPECIAL_VARS[v](ours, currentValue) : ours[v]
+    ))
+  );
+
+  // Build the object to store this data within.
+  const dataObject = {
+    regularSeason: {
+      opponentIds: []
+    },
+    postSeason: {
+      opponentIds: []
+    }
+  };
+
+  variables.forEach(v => {
+    dataObject.regularSeason[v] = 0;
+    dataObject.postSeason[v] = 0;
+  });
+
   rankable.produceTeamData(
     req,
     (total, currentValue, teamParticipations) => {
       const ours = teamParticipations.find(tp => tp.GameId === currentValue.GameId);
       const toAdd = ours.Game.playoff ? total.postSeason : total.regularSeason;
 
-      toAdd.offense += ours.rushingYards + ours.passingYards;
-      toAdd.defense += currentValue.rushingYards + currentValue.passingYards;
+      dataFunction(toAdd, ours, currentValue);
       toAdd.opponentIds.push(currentValue.TeamId);
 
       return total;
     },
-    {
-      regularSeason: {
-        offense: 0,
-        defense: 0,
-        opponentIds: []
-      },
-      postSeason: {
-        offense: 0,
-        defense: 0,
-        opponentIds: []
-      }
-    }
+    dataObject
   )
   .then(result => {
-    // Later will automatically be sorted at times.
+    // Should this be automatically sorted at times?
     const groupingQuery = req.query.grouping;
 
     groupable.groupResult(
       groupingQuery,
       result,
-      (a, b) => b.regularSeason.offense - a.regularSeason.offense
+      (a, b) => b.regularSeason[req.params.variable] - a.regularSeason[req.params.variable]
     )
     .then(grouped => {
       const setRanking = (t, index) => t.ranking = index + 1;
@@ -65,6 +83,6 @@ router.get('/', (req, res) => (
       res.json(grouped);
     })
   })
-));
+});
 
 module.exports = router;
