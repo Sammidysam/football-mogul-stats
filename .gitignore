@@ -75,3 +75,8 @@ backup/
 
 # Mac folder files
 .DS_Store
+
+# Hide output copy
+fe/public/Output
+fe/public/HTML_Templates
+fe/public/Logos

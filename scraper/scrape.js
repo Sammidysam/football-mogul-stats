@@ -3,7 +3,7 @@ const commandLineArgs = require('command-line-args');
 const find = require('find');
 const fs = require('fs');
 const cheerio = require('cheerio');
-const symlinkDir = require('symlink-dir');
+const ncp = require('ncp').ncp;
 
 const models = require('../models');
 const divisionsConferences = require('./divisionsconferences.js');
@@ -24,10 +24,16 @@ if (!options.directory) {
 }
 
 // Make our Output folder available to our frontend.
-symlinkDir(path.dirname(options.directory), `${__dirname}/../fe/public/FootballMogul`)
-.then(result => {
-  console.log('Created symbolic link for Output folder');
-});
+const publicDir = `${__dirname}/../fe/public`;
+const copyDirs = [
+  options.directory,
+  path.join(options.directory, '..', 'HTML_Templates'),
+  path.join(options.directory, '..', 'Logos')
+];
+
+copyDirs.forEach(dir => (
+  ncp(dir, path.join(publicDir, path.basename(dir)), err => {console.log(err)})
+));
 
 const BOX_SCORE_REGEX = /Box-([0-9]*)-([0-9]*)\.htm$/;
 

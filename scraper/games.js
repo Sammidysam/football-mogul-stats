@@ -39,8 +39,8 @@ const createGame = (match, filename, season) => {
 
   return models.Game.create({
     ...weekStatus(week),
-    boxScoreLink: `FootballMogul/Output/${filename}`,
-    recapLink: `FootballMogul/Output/${boxScoreToRecap(filename)}`,
+    boxScoreLink: `Output/${filename}`,
+    recapLink: `Output/${boxScoreToRecap(filename)}`,
     SeasonYear: season.year
   });
 };
