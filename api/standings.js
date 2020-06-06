@@ -2,11 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const models = require('../models');
+const groupable = require('./helpers/groupable.js');
 const rankable = require('./helpers/rankable.js');
-
-const DIVISION_AND_CONFERENCE = "divisionconference";
-const DIVISION = "division";
-const CONFERENCE = "conference";
 
 // When sorting by wins, we should be sure that we include ties into consideration.
 const teamWins = teamStandings => teamStandings.wins + (0.5 * teamStandings.ties);
@@ -206,25 +203,16 @@ router.get('/', (req, res) => (
       }
     }
   )
-  .then(result => {
-    if (req.query.grouping === DIVISION_AND_CONFERENCE) {
-      models.Conference.findAll({
-        include: {
-          model: models.Division
-        }
-      })
-      .then(conferences => {
-        const grouped = conferences.map(c => ({
-          ConferenceId: c.id,
-          Divisions: c.Divisions.map(d => ({
-            DivisionId: d.id,
-            // This passes through result c.Division.length times,
-            // so it could be more efficient?
-            Teams: result.filter(t => t.DivisionId === d.id)
-              .sort((a, b) => teamWins(b.regularSeason) - teamWins(a.regularSeason))
-          }))
-        }));
-
+  .then(result => (
+    groupable.groupResult(
+      req,
+      result,
+      (a, b) => teamWins(b.regularSeason) - teamWins(a.regularSeason)
+    )
+    .then(grouped => {
+      // Because the tiebreaker is different for each type of grouping,
+      // we do need to use the groupable grouping constants.
+      if (req.query.grouping === groupable.DIVISION_AND_CONFERENCE) {
         grouped.forEach(c => {
           c.Divisions.forEach(d => {
             const winsMap = groupBy(d.Teams, teamRSWins);
@@ -234,17 +222,11 @@ router.get('/', (req, res) => (
             });
           });
         });
+      }
 
-        res.json(grouped);
-      });
-    } else if (req.query.grouping === DIVISION) {
-
-    } else if (req.query.grouping === CONFERENCE) {
-
-    } else {
-      res.json(result);
-    }
-  })
+      res.json(grouped);
+    })
+  ))
 ));
 
 module.exports = router;
