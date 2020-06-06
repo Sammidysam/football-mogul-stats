@@ -6,6 +6,9 @@ const WEEK_REGEX = /Week ([0-9]*)/;
 const PLAYOFF_WEEKS = {
   'Wild Card': 1,
   'Division Round': 2,
+  // 'Conference Championship' appears in FM18, while the conference is specifically
+  // named in FM20.
+  'Conference Championship': 3,
   'AFC Title Game': 3,
   'NFC Title Game': 3,
   'Super Bowl': 4
