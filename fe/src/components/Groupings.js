@@ -12,7 +12,6 @@ class Groupings extends React.Component {
 
     this.state = {
       conferences: [],
-      teams: [],
       standings: []
     }
   }
@@ -34,29 +33,22 @@ class Groupings extends React.Component {
     .then(
       result => this.setState({ conferences: result })
     );
-
-    api.fetch('teams')
-    .then(
-      result => this.setState({ teams: result })
-    );
   }
 
   render() {
-    const { conferences, teams, standings } = this.state;
-    const { season } = this.props;
-
-    console.log(standings);
+    const { conferences, standings } = this.state;
 
     return (
-      <Box display="flex" flexDirection="row" alignItems="center">
-        {conferences.map(c => (
-          <ConferenceGroupings
+      <Box display="flex" style={{flexDirection: "row"}} alignItems="center">
+        {conferences.map(c => {
+          const conferenceGrouping = standings.find(s => s.ConferenceId === c.id);
+
+          return (<ConferenceGroupings
             key={c.id}
             conference={c}
-            standings={standings.length > 0 && standings.find(s => s.ConferenceId === c.id).Divisions}
-            teams={teams}
-          />
-        ))}
+            standings={conferenceGrouping && conferenceGrouping.Divisions}
+          />);
+        })}
       </Box>
     );
   }

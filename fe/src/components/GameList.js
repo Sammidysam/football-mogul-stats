@@ -54,10 +54,10 @@ class GameList extends React.Component {
 
   render() {
     const { games, teams, teamParticipations } = this.state;
-    const { playoff, week, season, classes } = this.props;
+    const { classes } = this.props;
 
     return (
-      <Box display="flex" flexDirection="column" width="80%">
+      <Box display="flex" style={{flexDirection: "column"}} width="80%">
         {games.map(g => {
           const away = teamParticipations.find(tp => tp.GameId === g.id && !tp.home) || {};
           const awayTeam = teams.find(t => t.id === away.TeamId) || {};
@@ -67,28 +67,28 @@ class GameList extends React.Component {
           const winnerId = away.score > home.score ? away.id : home.id;
 
           return (
-            <Paper display="flex" flexDirection="column" className={classes.paper} key={g.id}>
+            <Paper display="flex" style={{flexDirection: "column"}} className={classes.paper} key={g.id}>
               <Box padding="5px">
-                <Box display="flex" flexDirection="row" justifyContent="space-between">
-                  <Typography>
+                <Box display="flex" style={{flexDirection: "row"}} justifyContent="space-between">
+                  <Typography component="div">
                     <Box fontWeight={winnerId === away.id ? 'fontWeightMedium' : 'fontWeightRegular'}>
                       {awayTeam.name} {away.score}
                     </Box>
                   </Typography>
                   <Typography>
-                    <a href={g.recapLink} target="_blank">
+                    <a href={g.recapLink} target="_blank" rel="noopener noreferrer">
                       Recap
                     </a>
                   </Typography>
                 </Box>
-                <Box display="flex" flexDirection="row" justifyContent="space-between">
-                  <Typography>
+                <Box display="flex" style={{flexDirection: "row"}} justifyContent="space-between">
+                  <Typography component="div">
                     <Box fontWeight={winnerId === home.id ? 'fontWeightMedium' : 'fontWeightRegular'}>
                       {homeTeam.name} {home.score}
                     </Box>
                   </Typography>
                   <Typography>
-                    <a href={g.boxScoreLink} target="_blank">
+                    <a href={g.boxScoreLink} target="_blank" rel="noopener noreferrer">
                       Box Score
                     </a>
                   </Typography>

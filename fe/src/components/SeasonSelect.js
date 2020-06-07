@@ -11,10 +11,9 @@ class SeasonSelect extends React.Component {
       <Select
         onChange={onChange}
         value={value}
-        renderValue={e => e.year}
       >
         {seasons.map(s => (
-          <MenuItem value={s} key={s.year}>{s.year}</MenuItem>
+          <MenuItem value={s.year} key={s.year}>{s.year}</MenuItem>
         ))}
       </Select>
     );

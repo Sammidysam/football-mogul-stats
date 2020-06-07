@@ -41,7 +41,7 @@ class Schedule extends React.Component {
     const { playoff, week, season, seasons } = this.state;
 
     return (
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
         <Typography variant="h2">
           Schedule
         </Typography>
@@ -52,8 +52,8 @@ class Schedule extends React.Component {
               Year
             </InputLabel>
             <SeasonSelect
-              onChange={e => this.setState({ season: e.target.value })}
-              value={season}
+              onChange={e => this.setState({ season: { year: e.target.value } })}
+              value={seasons.length > 0 ? season.year : ''}
               seasons={seasons}
             />
           </FormControl>
@@ -63,8 +63,8 @@ class Schedule extends React.Component {
               Week
             </InputLabel>
             <WeekSelect
-              onChange={e => this.setState({ week: e.target.value.week, playoff: e.target.value.playoff })}
-              value={{ week: week, playoff: playoff }}
+              onChange={e => this.setState({ week: JSON.parse(e.target.value).week, playoff: JSON.parse(e.target.value).playoff })}
+              value={JSON.stringify({ week: week, playoff: playoff })}
               season={season}
             />
           </FormControl>

@@ -37,7 +37,7 @@ class GroupingsPage extends React.Component {
     const { seasons, season } = this.state;
 
     return (
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
         <Typography variant="h2">
           Standings
         </Typography>
@@ -47,8 +47,8 @@ class GroupingsPage extends React.Component {
             Year
           </InputLabel>
           <SeasonSelect
-            onChange={e => this.setState({ season: e.target.value })}
-            value={season}
+            onChange={e => this.setState({ season: { year: e.target.value } })}
+            value={seasons.length > 0 ? season.year : ''}
             seasons={seasons}
           />
         </FormControl>

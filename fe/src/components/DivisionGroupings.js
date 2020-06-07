@@ -7,21 +7,44 @@ import Typography from '@material-ui/core/Typography';
 const api = require('../api.js');
 
 class DivisionGroupings extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      teams: []
+    }
+  }
+
+  getTeams() {
+    api.fetch('teams', {
+      DivisionId: this.props.division.id
+    })
+    .then(
+      result => this.setState({ teams: result })
+    );
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.division.id !== prevProps.division.id) {
+      this.getTeams();
+    }
+  }
+
+  componentDidMount() {
+    this.getTeams();
+  }
+
   render() {
-    const { division, standings, teams } = this.props;
-
-    console.log(standings);
-
-    const divisionTeams = teams.filter(t => t.DivisionId === division.id);
-    const relevantStandings = standings && standings.filter(s => divisionTeams.map(t => t.id).includes(s.TeamId));
+    const { standings } = this.props;
+    const { teams } = this.state;
 
     return (
-      <Box display="flex" flexDirection="column" alignItems="center">
-        {relevantStandings && relevantStandings.map(s => {
-          const team = divisionTeams.find(t => t.id === s.TeamId);
+      <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
+        {standings && standings.map(s => {
+          const team = teams.find(t => t.id === s.TeamId);
 
           return (
-            <Paper display="flex" flexDirection="row" key={s.TeamId}>
+            <Paper display="flex" style={{flexDirection: "row"}} key={s.TeamId}>
               <Typography>
                 {team.name}
               </Typography>

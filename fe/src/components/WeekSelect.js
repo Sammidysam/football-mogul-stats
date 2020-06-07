@@ -31,7 +31,7 @@ class WeekSelect extends React.Component {
   }
 
   renderWeek(element) {
-    const week = element;
+    const week = element && JSON.parse(element);
 
     if (week.playoff) {
       switch (week.week) {
@@ -43,6 +43,8 @@ class WeekSelect extends React.Component {
         return 'CONF';
         case 4:
         return 'SB';
+        default:
+        return null;
       }
     } else {
       return week.week;
@@ -64,8 +66,8 @@ class WeekSelect extends React.Component {
     // We go one higher to make sure the last entry renders.
     while (week.week !== end.week + 1 || week.playoff !== end.playoff) {
       menuItems.push(
-        <MenuItem value={Object.assign({}, week)} key={JSON.stringify(week)}>
-          {this.renderWeek(week)}
+        <MenuItem value={JSON.stringify(week)} key={JSON.stringify(week)}>
+          {this.renderWeek(JSON.stringify(week))}
         </MenuItem>
       );
 
@@ -85,14 +87,13 @@ class WeekSelect extends React.Component {
 
   renderWeeks() {
     const { latest } = this.state;
-    const { value, season } = this.props;
+    const { season } = this.props;
 
     return this.weekMenuItems(season.year === latest.season.year && { week: latest.week, playoff: latest.playoff });
   }
 
   render() {
-    const { latest } = this.state;
-    const { onChange, value, season } = this.props;
+    const { onChange, value } = this.props;
 
     return (
       <Select

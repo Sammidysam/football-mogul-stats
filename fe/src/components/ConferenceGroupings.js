@@ -15,29 +15,40 @@ class ConferenceGroupings extends React.Component {
     }
   }
 
-  componentDidMount() {
-    api.fetch('divisions')
+  getDivisions() {
+    api.fetch('divisions', {
+      ConferenceId: this.props.conference.id
+    })
     .then(
       result => this.setState({ divisions: result })
     );
   }
 
-  render() {
-    const { divisions } = this.state;
-    const { conference, standings, teams } = this.props;
+  componentDidUpdate(prevProps) {
+    if (this.props.conference.id !== prevProps.conference.id) {
+      this.getDivisions();
+    }
+  }
 
-    console.log(standings);
+  componentDidMount() {
+    this.getDivisions();
+  }
+
+  render() {
+    const { standings } = this.props;
+    const { divisions } = this.state;
 
     return (
-      <Box display="flex" flexDirection="column" alignItems="center">
-        {divisions && divisions.filter(d => d.ConferenceId === conference.id).map(d => (
-          <DivisionGroupings
+      <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
+        {divisions.map(d => {
+          const currentGrouping = standings && standings.find(s => s.DivisionId === d.id);
+
+          return (<DivisionGroupings
             key={d.id}
             division={d}
-            standings={standings && standings.find(s => s.DivisionId === d.id).Teams}
-            teams={teams}
-          />
-        ))}
+            standings={currentGrouping && currentGrouping.Teams}
+          />);
+        })}
       </Box>
     );
   }
