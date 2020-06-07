@@ -1,12 +1,6 @@
 import React from 'react';
 
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import StandingsTable from './StandingsTable';
 
 const api = require('../api.js');
 
@@ -43,37 +37,10 @@ class DivisionGroupingTable extends React.Component {
     const { teams } = this.state;
 
     return (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Team</TableCell>
-              <TableCell align="right">Wins</TableCell>
-              <TableCell align="right">Losses</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data && data.map(s => {
-              const team = teams.find(t => t.id === s.TeamId);
-
-              return (
-                <TableRow key={s.TeamId}>
-                  <TableCell component="th" scope="row">
-                    {team.name}
-                  </TableCell>
-
-                  <TableCell align="right">
-                    {s.regularSeason.wins}
-                  </TableCell>
-                  <TableCell align="right">
-                    {s.regularSeason.losses}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <StandingsTable
+        data={data}
+        teams={teams}
+      />
     );
   }
 }

@@ -19,7 +19,7 @@ class GroupingsPage extends React.Component {
       grouping: 'divisionconference',
       seasons: [],
       season: {
-        year: 2000
+        year: 2005
       }
     };
   }
