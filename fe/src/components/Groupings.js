@@ -12,18 +12,18 @@ class Groupings extends React.Component {
 
     this.state = {
       conferences: [],
-      standings: []
+      data: []
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.season.year !== prevProps.season.year) {
-      api.fetch('standings', {
+      api.fetch(this.props.type, {
         year: this.props.season.year,
         grouping: 'divisionconference'
       })
       .then(
-        result => this.setState({ standings: result })
+        result => this.setState({ data: result })
       );
     }
   }
@@ -36,18 +36,20 @@ class Groupings extends React.Component {
   }
 
   render() {
-    const { conferences, standings } = this.state;
+    const { conferences, data } = this.state;
 
     return (
       <Box display="flex" style={{flexDirection: "row"}} alignItems="center">
         {conferences.map(c => {
-          const conferenceGrouping = standings.find(s => s.ConferenceId === c.id);
+          const conferenceGrouping = data.find(s => s.ConferenceId === c.id);
 
-          return (<ConferenceGroupings
-            key={c.id}
-            conference={c}
-            standings={conferenceGrouping && conferenceGrouping.Divisions}
-          />);
+          return (
+            <ConferenceGroupings
+              key={c.id}
+              conference={c}
+              data={conferenceGrouping && conferenceGrouping.Divisions}
+            />
+          );
         })}
       </Box>
     );

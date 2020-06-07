@@ -35,19 +35,21 @@ class ConferenceGroupings extends React.Component {
   }
 
   render() {
-    const { standings } = this.props;
+    const { data } = this.props;
     const { divisions } = this.state;
 
     return (
       <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
         {divisions.map(d => {
-          const currentGrouping = standings && standings.find(s => s.DivisionId === d.id);
+          const currentGrouping = data && data.find(s => s.DivisionId === d.id);
 
-          return (<DivisionGroupings
-            key={d.id}
-            division={d}
-            standings={currentGrouping && currentGrouping.Teams}
-          />);
+          return (
+            <DivisionGroupings
+              key={d.id}
+              division={d}
+              data={currentGrouping && currentGrouping.Teams}
+            />
+          );
         })}
       </Box>
     );

@@ -35,12 +35,12 @@ class DivisionGroupings extends React.Component {
   }
 
   render() {
-    const { standings } = this.props;
+    const { data } = this.props;
     const { teams } = this.state;
 
     return (
       <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
-        {standings && standings.map(s => {
+        {data && data.map(s => {
           const team = teams.find(t => t.id === s.TeamId);
 
           return (

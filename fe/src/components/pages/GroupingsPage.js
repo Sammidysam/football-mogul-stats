@@ -5,6 +5,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 
+import GroupingSelect from '../GroupingSelect.js';
 import SeasonSelect from '../SeasonSelect.js';
 import Groupings from '../Groupings.js';
 
@@ -15,6 +16,7 @@ class GroupingsPage extends React.Component {
     super(props);
 
     this.state = {
+      grouping: 'divisionconference',
       seasons: [],
       season: {
         year: 2000
@@ -34,7 +36,8 @@ class GroupingsPage extends React.Component {
   }
 
   render() {
-    const { seasons, season } = this.state;
+    const { grouping, seasons, season } = this.state;
+    const { type } = this.props;
 
     return (
       <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
@@ -42,19 +45,33 @@ class GroupingsPage extends React.Component {
           Standings
         </Typography>
 
-        <FormControl>
-          <InputLabel>
-            Year
-          </InputLabel>
-          <SeasonSelect
-            onChange={e => this.setState({ season: { year: e.target.value } })}
-            value={seasons.length > 0 ? season.year : ''}
-            seasons={seasons}
-          />
-        </FormControl>
+        <Box display="flex">
+          <FormControl>
+            <InputLabel>
+              Year
+            </InputLabel>
+            <SeasonSelect
+              onChange={e => this.setState({ season: { year: e.target.value } })}
+              value={seasons.length > 0 ? season.year : ''}
+              seasons={seasons}
+            />
+          </FormControl>
+
+          <FormControl>
+            <InputLabel>
+              Grouping
+            </InputLabel>
+            <GroupingSelect
+              onChange={e => this.setState({ grouping: e.target.value })}
+              value={grouping}
+            />
+          </FormControl>
+        </Box>
 
         <Groupings
           season={season}
+          type={type}
+          grouping={grouping}
         />
       </Box>
     );
