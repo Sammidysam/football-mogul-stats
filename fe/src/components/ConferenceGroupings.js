@@ -2,7 +2,7 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 
-import DivisionGroupings from './DivisionGroupings';
+import DivisionGroupingTable from './DivisionGroupingTable';
 
 const api = require('../api.js');
 
@@ -44,7 +44,7 @@ class ConferenceGroupings extends React.Component {
           const currentGrouping = data && data.find(s => s.DivisionId === d.id);
 
           return (
-            <DivisionGroupings
+            <DivisionGroupingTable
               key={d.id}
               division={d}
               data={currentGrouping && currentGrouping.Teams}
