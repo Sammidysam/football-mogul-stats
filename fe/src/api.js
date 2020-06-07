@@ -7,8 +7,13 @@ if (!process.env.REACT_APP_API_URL) {
   // Set default value?  Exit?
 }
 
-const fetch = (url, params) => {
-  return window.fetch(`http://${API_URL}/${url}${params ? `?${queryString.stringify(params)}` : ''}`)
+const fetch = (url, params, debug = false) => {
+  const query = `http://${API_URL}/${url}${params ? `?${queryString.stringify(params)}` : ''}`;
+
+  if (debug)
+    console.log(query);
+
+  return window.fetch(query)
   .then(res => res.json());
 };
 

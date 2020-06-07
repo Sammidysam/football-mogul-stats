@@ -10,7 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 
 const api = require('../api.js');
 
-class DivisionGroupingTable extends React.Component {
+class ConferenceGroupingTable extends React.Component {
   constructor(props) {
     super(props);
 
@@ -20,16 +20,21 @@ class DivisionGroupingTable extends React.Component {
   }
 
   getTeams() {
-    api.fetch('teams', {
-      DivisionId: this.props.division.id
+    api.fetch('divisions', {
+      ConferenceId: this.props.conference.id
     })
-    .then(
-      result => this.setState({ teams: result })
-    );
+    .then(result => (
+      api.fetch('teams', {
+        DivisionId: result.map(d => d.id)
+      })
+      .then(
+        result => this.setState({ teams: result })
+      )
+    ));
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.division.id !== prevProps.division.id) {
+    if (this.props.conference.id !== prevProps.conference.id) {
       this.getTeams();
     }
   }
@@ -56,7 +61,7 @@ class DivisionGroupingTable extends React.Component {
             {data && data.map(s => {
               const team = teams.find(t => t.id === s.TeamId);
 
-              return (
+              return team && (
                 <TableRow key={s.TeamId}>
                   <TableCell component="th" scope="row">
                     {team.name}
@@ -78,4 +83,4 @@ class DivisionGroupingTable extends React.Component {
   }
 }
 
-export default DivisionGroupingTable;
+export default ConferenceGroupingTable;
