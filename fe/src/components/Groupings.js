@@ -2,11 +2,11 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 
-import ConferenceStandings from './ConferenceStandings';
+import ConferenceGroupings from './ConferenceGroupings';
 
 const api = require('../api.js');
 
-class Standings extends React.Component {
+class Groupings extends React.Component {
   constructor(props) {
     super(props);
 
@@ -20,7 +20,8 @@ class Standings extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.season.year !== prevProps.season.year) {
       api.fetch('standings', {
-        year: this.props.season.year
+        year: this.props.season.year,
+        grouping: 'divisionconference'
       })
       .then(
         result => this.setState({ standings: result })
@@ -44,13 +45,15 @@ class Standings extends React.Component {
     const { conferences, teams, standings } = this.state;
     const { season } = this.props;
 
+    console.log(standings);
+
     return (
       <Box display="flex" flexDirection="row" alignItems="center">
         {conferences.map(c => (
-          <ConferenceStandings
+          <ConferenceGroupings
             key={c.id}
             conference={c}
-            standings={standings}
+            standings={standings.length > 0 && standings.find(s => s.ConferenceId === c.id).Divisions}
             teams={teams}
           />
         ))}
@@ -59,4 +62,4 @@ class Standings extends React.Component {
   }
 }
 
-export default Standings;
+export default Groupings;

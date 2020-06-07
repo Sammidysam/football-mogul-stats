@@ -25,3 +25,5 @@ NODE_ENV=local node scraper/scrape.js -d 'directory'
 Then, execute `./build.sh` in both `.` and `fe`, as well as `./run.sh` in both
 folders.
 The frontend will be on `localhost:3040` and the backend will be on `localhost:3041`.
+
+Actually, possibly run React on the local machine, as it is dreadfully slow in Docker.

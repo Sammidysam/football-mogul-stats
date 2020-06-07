@@ -6,11 +6,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Typography from '@material-ui/core/Typography';
 
 import SeasonSelect from '../SeasonSelect.js';
-import Standings from '../Standings.js';
+import Groupings from '../Groupings.js';
 
 const api = require('../../api.js');
 
-class StandingsPage extends React.Component {
+class GroupingsPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -53,7 +53,7 @@ class StandingsPage extends React.Component {
           />
         </FormControl>
 
-        <Standings
+        <Groupings
           season={season}
         />
       </Box>
@@ -61,4 +61,4 @@ class StandingsPage extends React.Component {
   }
 }
 
-export default StandingsPage;
+export default GroupingsPage;

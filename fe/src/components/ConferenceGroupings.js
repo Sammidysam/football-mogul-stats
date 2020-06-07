@@ -2,11 +2,11 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 
-import DivisionStandings from './DivisionStandings';
+import DivisionGroupings from './DivisionGroupings';
 
 const api = require('../api.js');
 
-class ConferenceStandings extends React.Component {
+class ConferenceGroupings extends React.Component {
   constructor(props) {
     super(props);
 
@@ -26,15 +26,15 @@ class ConferenceStandings extends React.Component {
     const { divisions } = this.state;
     const { conference, standings, teams } = this.props;
 
-    const conferenceDivisions = divisions.filter(d => d.ConferenceId === conference.id);
+    console.log(standings);
 
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
-        {conferenceDivisions.map(d => (
-          <DivisionStandings
+        {divisions && divisions.filter(d => d.ConferenceId === conference.id).map(d => (
+          <DivisionGroupings
             key={d.id}
             division={d}
-            standings={standings}
+            standings={standings && standings.find(s => s.DivisionId === d.id).Teams}
             teams={teams}
           />
         ))}
@@ -43,4 +43,4 @@ class ConferenceStandings extends React.Component {
   }
 }
 
-export default ConferenceStandings;
+export default ConferenceGroupings;

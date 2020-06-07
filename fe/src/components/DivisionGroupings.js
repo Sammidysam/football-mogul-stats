@@ -6,16 +6,18 @@ import Typography from '@material-ui/core/Typography';
 
 const api = require('../api.js');
 
-class DivisionStandings extends React.Component {
+class DivisionGroupings extends React.Component {
   render() {
     const { division, standings, teams } = this.props;
 
+    console.log(standings);
+
     const divisionTeams = teams.filter(t => t.DivisionId === division.id);
-    const relevantStandings = standings.filter(s => divisionTeams.map(t => t.id).includes(s.TeamId));
+    const relevantStandings = standings && standings.filter(s => divisionTeams.map(t => t.id).includes(s.TeamId));
 
     return (
       <Box display="flex" flexDirection="column" alignItems="center">
-        {relevantStandings.map(s => {
+        {relevantStandings && relevantStandings.map(s => {
           const team = divisionTeams.find(t => t.id === s.TeamId);
 
           return (
@@ -37,4 +39,4 @@ class DivisionStandings extends React.Component {
   }
 }
 
-export default DivisionStandings;
+export default DivisionGroupings;
