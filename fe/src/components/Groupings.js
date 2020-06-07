@@ -43,6 +43,7 @@ class Groupings extends React.Component {
     const { conferences, data } = this.state;
     const { grouping } = this.props;
 
+    // Add disclaimer of all tiebreakers not yet being implemented.
     return (
       <Box display="flex" style={{flexDirection: "row"}} alignItems="center">
         {conferences.map(c => {
