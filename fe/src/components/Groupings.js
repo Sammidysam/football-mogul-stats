@@ -4,6 +4,8 @@ import Box from '@material-ui/core/Box';
 
 import ConferenceGroupings from './ConferenceGroupings';
 import ConferenceGroupingTable from './ConferenceGroupingTable';
+import DivisionGroupingTable from './DivisionGroupingTable';
+import StandingsTable from './StandingsTable';
 
 const api = require('../api.js');
 
@@ -13,6 +15,8 @@ class Groupings extends React.Component {
 
     this.state = {
       conferences: [],
+      divisions: [],
+      teams: [],
       data: []
     }
   }
@@ -29,6 +33,20 @@ class Groupings extends React.Component {
       .then(
         result => this.setState({ data: result })
       );
+
+      if (this.props.grouping === 'division' && this.state.divisions.length === 0) {
+        api.fetch('divisions')
+        .then(
+          result => this.setState({ divisions: result })
+        );
+      }
+
+      if (this.props.grouping === 'sorted' && this.state.teams.length === 0) {
+        api.fetch('teams')
+        .then(
+          result => this.setState({ teams: result })
+        );
+      }
     }
   }
 
@@ -39,30 +57,62 @@ class Groupings extends React.Component {
     );
   }
 
-  render() {
-    const { conferences, data } = this.state;
+  groupingComponent() {
+    const { conferences, divisions, teams, data } = this.state;
     const { grouping } = this.props;
 
-    // Add disclaimer of all tiebreakers not yet being implemented.
-    return (
-      <Box display="flex" style={{flexDirection: "row"}} alignItems="center">
-        {conferences.map(c => {
-          const conferenceGrouping = data.find(s => s.ConferenceId === c.id);
+    if (grouping === 'divisionconference' || grouping === 'conference') {
+      return conferences.map(c => {
+        const conferenceGrouping = data.find(s => s.ConferenceId === c.id);
 
-          return grouping === 'divisionconference' ? (
+        if (grouping === 'divisionconference') {
+          return (
             <ConferenceGroupings
               key={c.id}
               conference={c}
               data={conferenceGrouping && conferenceGrouping.Divisions}
             />
-          ) : (
+          );
+        } else {
+          return (
             <ConferenceGroupingTable
               key={c.id}
               conference={c}
               data={conferenceGrouping && conferenceGrouping.Teams}
             />
           );
-        })}
+        }
+      });
+    } else if (grouping === 'division') {
+      return divisions.map(d => {
+        const divisionGrouping = data.find(s => s.DivisionId === d.id);
+
+        return (
+          <DivisionGroupingTable
+            key={d.id}
+            division={d}
+            data={divisionGrouping && divisionGrouping.Teams}
+          />
+        );
+      });
+    } else if (grouping === 'sorted') {
+      return (
+        <StandingsTable
+          data={data}
+          teams={teams}
+        />
+      );
+    }
+  }
+
+  render() {
+    const { grouping } = this.props;
+
+    // Add disclaimer of all tiebreakers not yet being implemented.
+    // Also, probably should just make the box included in the function output.
+    return (
+      <Box display="flex" style={{flexDirection: "row", maxWidth: grouping === 'division' ? 610 : '100%'}} flexWrap={grouping === 'division' ? 'wrap' : 'nowrap'} alignItems="center">
+        {this.groupingComponent()}
       </Box>
     );
   }
