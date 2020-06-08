@@ -55,7 +55,16 @@ router.get('/', (req, res) => {
     groupable.groupResult(
       groupingQuery,
       result,
-      (a, b) => req.query.sort ? (b.regularSeason[req.query.sort] - a.regularSeason[req.query.sort]) : null
+      (a, b) => {
+        if (!req.query.sort) {
+          return null;
+        } else {
+          const first = req.query.descending ? a : b;
+          const second = req.query.descending ? b : a;
+
+          return first.regularSeason[req.query.sort] - second.regularSeason[req.query.sort];
+        }
+      }
     )
     .then(grouped => {
       const setRanking = (t, index) => t.ranking = index + 1;
