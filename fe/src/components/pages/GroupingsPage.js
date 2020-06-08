@@ -41,8 +41,8 @@ class GroupingsPage extends React.Component {
 
     return (
       <Box display="flex" style={{flexDirection: "column"}} alignItems="center">
-        <Typography variant="h2">
-          Standings
+        <Typography variant="h2" style={{textTransform: "capitalize"}}>
+          {type}
         </Typography>
 
         <Box display="flex">

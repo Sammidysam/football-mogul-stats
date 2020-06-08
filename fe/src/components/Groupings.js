@@ -30,8 +30,7 @@ class Groupings extends React.Component {
       api.fetch(this.props.type, {
         year: this.props.season.year,
         grouping: this.props.grouping,
-        sort: 'defenseYards',
-        descending: true
+        sort: 'offenseYards'
       })
       .then(
         result => this.setState({ data: result })
