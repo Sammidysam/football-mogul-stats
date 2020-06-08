@@ -35,7 +35,7 @@ class ConferenceGroupings extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, type } = this.props;
     const { divisions } = this.state;
 
     return (
@@ -48,6 +48,7 @@ class ConferenceGroupings extends React.Component {
               key={d.id}
               division={d}
               data={currentGrouping && currentGrouping.Teams}
+              type={type}
             />
           );
         })}

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import RankingsTable from './RankingsTable';
 import StandingsTable from './StandingsTable';
 
 const api = require('../api.js');
@@ -33,11 +34,16 @@ class DivisionGroupingTable extends React.Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, type } = this.props;
     const { teams } = this.state;
 
-    return (
+    return type === 'standings' ? (
       <StandingsTable
+        data={data}
+        teams={teams}
+      />
+    ) : (
+      <RankingsTable
         data={data}
         teams={teams}
       />

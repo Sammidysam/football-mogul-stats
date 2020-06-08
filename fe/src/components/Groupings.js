@@ -5,6 +5,7 @@ import Box from '@material-ui/core/Box';
 import ConferenceGroupings from './ConferenceGroupings';
 import ConferenceGroupingTable from './ConferenceGroupingTable';
 import DivisionGroupingTable from './DivisionGroupingTable';
+import RankingsTable from './RankingsTable';
 import StandingsTable from './StandingsTable';
 
 const api = require('../api.js');
@@ -28,7 +29,8 @@ class Groupings extends React.Component {
     ) {
       api.fetch(this.props.type, {
         year: this.props.season.year,
-        grouping: this.props.grouping
+        grouping: this.props.grouping,
+        sort: 'offenseYards'
       })
       .then(
         result => this.setState({ data: result })
@@ -59,7 +61,7 @@ class Groupings extends React.Component {
 
   groupingComponent() {
     const { conferences, divisions, teams, data } = this.state;
-    const { grouping } = this.props;
+    const { grouping, type } = this.props;
 
     if (grouping === 'divisionconference' || grouping === 'conference') {
       return conferences.map(c => {
@@ -71,6 +73,7 @@ class Groupings extends React.Component {
               key={c.id}
               conference={c}
               data={conferenceGrouping && conferenceGrouping.Divisions}
+              type={type}
             />
           );
         } else {
@@ -79,6 +82,7 @@ class Groupings extends React.Component {
               key={c.id}
               conference={c}
               data={conferenceGrouping && conferenceGrouping.Teams}
+              type={type}
             />
           );
         }
@@ -92,12 +96,18 @@ class Groupings extends React.Component {
             key={d.id}
             division={d}
             data={divisionGrouping && divisionGrouping.Teams}
+            type={type}
           />
         );
       });
     } else if (grouping === 'sorted') {
-      return (
+      return type === 'standings' ? (
         <StandingsTable
+          data={data}
+          teams={teams}
+        />
+      ) : (
+        <RankingsTable
           data={data}
           teams={teams}
         />
