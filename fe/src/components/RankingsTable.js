@@ -20,6 +20,8 @@ class RankingsTable extends React.Component {
               <TableCell>Rank</TableCell>
               <TableCell>Team</TableCell>
               <TableCell align="right">Offensive Yards</TableCell>
+              <TableCell align="right">Passing Yards</TableCell>
+              <TableCell align="right">Rushing Yards</TableCell>
               <TableCell align="right">Defensive Yards</TableCell>
             </TableRow>
           </TableHead>
@@ -39,6 +41,12 @@ class RankingsTable extends React.Component {
 
                   <TableCell align="right">
                     {s.regularSeason.offenseYards}
+                  </TableCell>
+                  <TableCell align="right">
+                    {s.regularSeason.passingYards}
+                  </TableCell>
+                  <TableCell align="right">
+                    {s.regularSeason.rushingYards}
                   </TableCell>
                   <TableCell align="right">
                     {s.regularSeason.defenseYards}
